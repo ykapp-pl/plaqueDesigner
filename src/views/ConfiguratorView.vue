@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import LineCountSelector from '../components/configurator/LineCountSelector.vue'
@@ -7,21 +7,35 @@ import LineEditor from '../components/configurator/LineEditor.vue'
 import OptionToggle from '../components/configurator/OptionToggle.vue'
 import SizeSelector from '../components/configurator/SizeSelector.vue'
 import SignPreview from '../components/preview/SignPreview.vue'
+import OrderMetadataForm from '../components/order/OrderMetadataForm.vue'
 import { isSignSizeId } from '../config/signSizes'
 import { useProjectStore } from '../stores/projectStore'
+import { loadLocalDraft, saveLocalDraft } from '../services/localDraftService'
 
 const store = useProjectStore()
 const route = useRoute()
 const router = useRouter()
+const project = computed(() => store.toProject())
+const savedMessage = ref(false)
 
 onMounted(() => {
+  const draft = loadLocalDraft()
+  if (draft) store.loadProject(draft)
   const initialSize = typeof route.query.size === 'string' ? route.query.size : ''
   if (isSignSizeId(initialSize)) store.setSize(initialSize)
 })
 
+watch(project, (value) => { saveLocalDraft(value) }, { deep: true })
+
 function setSize(sizeId: string): void {
   store.setSize(sizeId)
   void router.replace({ query: { ...route.query, size: sizeId } })
+}
+
+function saveProject(): void {
+  saveLocalDraft(project.value)
+  savedMessage.value = true
+  window.setTimeout(() => { savedMessage.value = false }, 2400)
 }
 </script>
 
@@ -83,13 +97,8 @@ function setSize(sizeId: string): void {
 
       <div class="preview-column">
         <SignPreview :configuration="store.configuration" :size="store.selectedSize" />
-        <div class="next-step-note">
-          <span class="step-badge step-badge--muted">2</span>
-          <div>
-            <strong>Dane zamówienia</strong>
-            <p>Formularz i zapis projektu pojawią się w kolejnym kroku.</p>
-          </div>
-        </div>
+        <OrderMetadataForm :customer="store.customer" :project="project" @change="store.setCustomerField" @save="saveProject" />
+        <p v-if="savedMessage" class="saved-message" role="status">Projekt zapisany lokalnie w tej przeglądarce.</p>
       </div>
     </div>
   </main>
