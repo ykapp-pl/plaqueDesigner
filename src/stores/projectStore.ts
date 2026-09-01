@@ -7,11 +7,14 @@ import {
   createDefaultLine,
   getAllowedLineCountAfterSizeChange,
   type SignLine,
+  type OrderMetadata,
+  type SignProject,
   type SignProjectConfiguration,
 } from '../domain/signProject'
 
 export const useProjectStore = defineStore('project', () => {
   const configuration = ref<SignProjectConfiguration>(createDefaultConfiguration())
+  const customer = ref<OrderMetadata>({ fullName: '', login: '', orderNumber: '' })
   const selectedSize = computed(() => getSignSizeById(configuration.value.sizeId) ?? SIGN_SIZES[0])
 
   function setSize(sizeId: string): void {
@@ -57,13 +60,33 @@ export const useProjectStore = defineStore('project', () => {
     configuration.value.mountingHolesEnabled = enabled
   }
 
+  function setCustomerField(field: keyof OrderMetadata, value: string): void {
+    customer.value[field] = value
+  }
+
+  function toProject(): SignProject {
+    return {
+      customer: { ...customer.value },
+      configuration: structuredClone(configuration.value),
+    }
+  }
+
+  function loadProject(project: SignProject): void {
+    customer.value = { ...project.customer }
+    configuration.value = structuredClone(project.configuration)
+  }
+
   return {
     configuration,
+    customer,
     selectedSize,
     setSize,
     setLineCount,
     updateLine,
     setBackgroundEnabled,
     setMountingHolesEnabled,
+    setCustomerField,
+    toProject,
+    loadProject,
   }
 })

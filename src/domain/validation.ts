@@ -60,13 +60,37 @@ export const signProjectConfigurationSchema = z
     }
   })
 
-export const signProjectSchema = z.object({
+export const draftProjectSchema = z.object({
   id: z.string().uuid().optional(),
   createdAt: z.string().datetime().optional(),
   updatedAt: z.string().datetime().optional(),
-  customer: orderMetadataSchema,
+  customer: z.object({
+    fullName: z.string().max(120),
+    login: z.string().max(80),
+    orderNumber: z.string().max(80),
+  }),
   configuration: signProjectConfigurationSchema,
 })
+
+export const signProjectSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    createdAt: z.string().datetime().optional(),
+    updatedAt: z.string().datetime().optional(),
+    customer: orderMetadataSchema,
+    configuration: signProjectConfigurationSchema,
+  })
+  .superRefine((project, context) => {
+    project.configuration.lines.forEach((line, index) => {
+      if (!line.text.trim()) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['configuration', 'lines', index, 'text'],
+          message: 'Wpisz tekst tej linii.',
+        })
+      }
+    })
+  })
 
 export type ValidatedOrderMetadata = z.infer<typeof orderMetadataSchema>
 export type ValidatedSignProjectConfiguration = z.infer<typeof signProjectConfigurationSchema>
