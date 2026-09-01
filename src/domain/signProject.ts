@@ -37,6 +37,7 @@ export interface OrderMetadata {
 
 export interface SignProject {
   id?: string
+  accessToken?: string
   createdAt?: string
   updatedAt?: string
   customer: OrderMetadata

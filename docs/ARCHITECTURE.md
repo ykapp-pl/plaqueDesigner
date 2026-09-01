@@ -150,6 +150,7 @@ Tabela MVP:
 ```sql
 create table public.projects (
   id uuid primary key default gen_random_uuid(),
+  access_token uuid not null unique default gen_random_uuid(),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
 
@@ -175,6 +176,8 @@ create index projects_created_at_idx
 ```
 
 `configuration` jest źródłem prawdy dla projektu.
+
+Bezpośredni dostęp ról `anon` i `authenticated` do tabeli jest odebrany. Zapis i odczyt odbywa się przez Edge Function `projects`, która wymaga pary `id` + `access_token` przy odczycie. Klient używa wyłącznie publicznego klucza `publishable`; operacje administracyjne pozostają po stronie Supabase Edge Function.
 
 Pola `size_id`, `order_number`, `login` są dodatkowo wyciągnięte do kolumn, ponieważ mają być łatwe do wyszukiwania.
 

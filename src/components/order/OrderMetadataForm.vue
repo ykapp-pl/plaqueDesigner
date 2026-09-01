@@ -80,7 +80,7 @@ function submit(): void {
       <p v-if="submitted && !result.success" class="form-error" role="alert">
         Uzupełnij dane zamówienia i tekst wszystkich wybranych linii.
       </p>
-      <button type="submit" class="primary-button">Zapisz projekt lokalnie</button>
+      <button type="submit" class="primary-button">Zapisz projekt</button>
     </form>
   </section>
 </template>
