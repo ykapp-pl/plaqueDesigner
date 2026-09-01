@@ -18,3 +18,7 @@ npm run build
 ```
 
 Projekt jest rozwijany etapami zgodnie z [planem implementacji](./docs/IMPLEMENTATION_PLAN.md).
+
+## Praca zdalna
+
+Proces Pull Requestów, automatycznej weryfikacji i podglądów Vercel opisuje [workflow deweloperski](./docs/DEVELOPMENT_WORKFLOW.md).
