@@ -123,6 +123,7 @@ Najpierw sprawdź aktualny schemat.
 Następnie przygotuj migrację tworzącą tabelę public.projects:
 
 - id uuid PK default gen_random_uuid()
+- access_token uuid not null unique default gen_random_uuid()
 - created_at timestamptz not null default now()
 - updated_at timestamptz not null default now()
 - full_name text not null
@@ -140,6 +141,10 @@ Przygotuj także mechanizm aktualizacji updated_at.
 
 Przed wykonaniem zmian pokaż plan migracji.
 Następnie zastosuj migrację MCP i zweryfikuj wynik.
+
+Włącz RLS i odbierz bezpośredni dostęp rolom `anon` oraz `authenticated`.
+Zapis i odczyt realizuj przez Edge Function `projects`; odczyt wymaga pary
+`id` + `access_token`.
 
 Nie twórz publicznych polityk SELECT dla wszystkich rekordów.
 Nie wyłączaj RLS jako rozwiązania problemu.
@@ -178,7 +183,7 @@ Backend:
 
 ## Wariant B — prostszy prototyp
 
-Anon key + RLS pozwalający wyłącznie na `INSERT`.
+Publishable key + RLS pozwalający wyłącznie na operacje z Edge Function.
 
 Brak publicznego SELECT.
 
@@ -198,8 +203,12 @@ Frontend:
 
 ```env
 VITE_SUPABASE_URL=
-VITE_SUPABASE_ANON_KEY=
+VITE_SUPABASE_PUBLISHABLE_KEY=
 ```
+
+Używaj aktualnego klucza publishable (`sb_publishable_...`). Klucz `anon` jest
+starszym wariantem kompatybilności i nie powinien być nazwą zmiennej w nowej
+konfiguracji.
 
 W repo:
 ```text

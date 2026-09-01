@@ -15,6 +15,8 @@ import {
 export const useProjectStore = defineStore('project', () => {
   const configuration = ref<SignProjectConfiguration>(createDefaultConfiguration())
   const customer = ref<OrderMetadata>({ fullName: '', login: '', orderNumber: '' })
+  const projectId = ref<string>()
+  const accessToken = ref<string>()
   const selectedSize = computed(() => getSignSizeById(configuration.value.sizeId) ?? SIGN_SIZES[0])
 
   function setSize(sizeId: string): void {
@@ -66,14 +68,23 @@ export const useProjectStore = defineStore('project', () => {
 
   function toProject(): SignProject {
     return {
+      id: projectId.value,
+      accessToken: accessToken.value,
       customer: { ...customer.value },
       configuration: structuredClone(configuration.value),
     }
   }
 
   function loadProject(project: SignProject): void {
+    projectId.value = project.id
+    accessToken.value = project.accessToken
     customer.value = { ...project.customer }
     configuration.value = structuredClone(project.configuration)
+  }
+
+  function setProjectIdentity(id: string, token: string): void {
+    projectId.value = id
+    accessToken.value = token
   }
 
   return {
@@ -88,5 +99,6 @@ export const useProjectStore = defineStore('project', () => {
     setCustomerField,
     toProject,
     loadProject,
+    setProjectIdentity,
   }
 })

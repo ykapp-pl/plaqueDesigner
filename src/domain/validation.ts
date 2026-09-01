@@ -62,6 +62,7 @@ export const signProjectConfigurationSchema = z
 
 export const draftProjectSchema = z.object({
   id: z.string().uuid().optional(),
+  accessToken: z.string().uuid().optional(),
   createdAt: z.string().datetime().optional(),
   updatedAt: z.string().datetime().optional(),
   customer: z.object({
@@ -75,6 +76,7 @@ export const draftProjectSchema = z.object({
 export const signProjectSchema = z
   .object({
     id: z.string().uuid().optional(),
+    accessToken: z.string().uuid().optional(),
     createdAt: z.string().datetime().optional(),
     updatedAt: z.string().datetime().optional(),
     customer: orderMetadataSchema,

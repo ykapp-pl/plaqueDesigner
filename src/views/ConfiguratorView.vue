@@ -11,12 +11,16 @@ import OrderMetadataForm from '../components/order/OrderMetadataForm.vue'
 import { isSignSizeId } from '../config/signSizes'
 import { useProjectStore } from '../stores/projectStore'
 import { loadLocalDraft, saveLocalDraft } from '../services/localDraftService'
+import { createProject } from '../services/projectService'
 
 const store = useProjectStore()
 const route = useRoute()
 const router = useRouter()
 const project = computed(() => store.toProject())
 const savedMessage = ref(false)
+const saveError = ref('')
+const isSaving = ref(false)
+const remoteProjectId = ref('')
 
 onMounted(() => {
   const draft = loadLocalDraft()
@@ -32,10 +36,21 @@ function setSize(sizeId: string): void {
   void router.replace({ query: { ...route.query, size: sizeId } })
 }
 
-function saveProject(): void {
-  saveLocalDraft(project.value)
-  savedMessage.value = true
-  window.setTimeout(() => { savedMessage.value = false }, 2400)
+async function saveProject(): Promise<void> {
+  isSaving.value = true
+  saveError.value = ''
+  try {
+    const reference = await createProject(project.value)
+    store.setProjectIdentity(reference.id, reference.accessToken)
+    saveLocalDraft(store.toProject())
+    remoteProjectId.value = reference.id
+    savedMessage.value = true
+    window.setTimeout(() => { savedMessage.value = false }, 3000)
+  } catch (error) {
+    saveError.value = error instanceof Error ? error.message : 'Nie udało się zapisać projektu.'
+  } finally {
+    isSaving.value = false
+  }
 }
 </script>
 
@@ -98,7 +113,10 @@ function saveProject(): void {
       <div class="preview-column">
         <SignPreview :configuration="store.configuration" :size="store.selectedSize" />
         <OrderMetadataForm :customer="store.customer" :project="project" @change="store.setCustomerField" @save="saveProject" />
-        <p v-if="savedMessage" class="saved-message" role="status">Projekt zapisany lokalnie w tej przeglądarce.</p>
+        <p v-if="savedMessage" class="saved-message" role="status">
+          Projekt zapisany w Supabase. ID: <code>{{ remoteProjectId }}</code>
+        </p>
+        <p v-if="saveError" class="form-error" role="alert">{{ saveError }}</p>
       </div>
     </div>
   </main>
