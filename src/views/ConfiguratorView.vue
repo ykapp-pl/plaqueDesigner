@@ -45,6 +45,7 @@ async function saveProject(): Promise<void> {
     saveLocalDraft(store.toProject())
     remoteProjectId.value = reference.id
     savedMessage.value = true
+    await router.push({ name: 'project', params: { id: reference.id }, query: { token: reference.accessToken } })
     window.setTimeout(() => { savedMessage.value = false }, 3000)
   } catch (error) {
     saveError.value = error instanceof Error ? error.message : 'Nie udało się zapisać projektu.'
