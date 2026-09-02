@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue'
+import { computed, ref, toRaw } from 'vue'
 import { defineStore } from 'pinia'
 
 import { getSignSizeById, SIGN_SIZES } from '../config/signSizes'
@@ -71,7 +71,7 @@ export const useProjectStore = defineStore('project', () => {
       id: projectId.value,
       accessToken: accessToken.value,
       customer: { ...customer.value },
-      configuration: structuredClone(configuration.value),
+      configuration: structuredClone(toRaw(configuration.value)),
     }
   }
 

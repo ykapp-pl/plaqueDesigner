@@ -36,4 +36,14 @@ describe('projectStore', () => {
     expect(store.configuration.lines).toHaveLength(3)
     expect(store.configuration.lines[2]).toMatchObject({ id: 'line-3', text: '', horizontalAlign: 'center' })
   })
+
+  it('tworzy serializowalny snapshot reaktywnej konfiguracji', () => {
+    const store = useProjectStore()
+    store.updateLine(0, { text: 'KOWALSCY' })
+
+    const project = store.toProject()
+
+    expect(project.configuration.lines[0].text).toBe('KOWALSCY')
+    expect(project.configuration).not.toBe(store.configuration)
+  })
 })
