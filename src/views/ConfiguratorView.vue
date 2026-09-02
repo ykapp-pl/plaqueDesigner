@@ -21,6 +21,7 @@ const savedMessage = ref(false)
 const saveError = ref('')
 const isSaving = ref(false)
 const remoteProjectId = ref('')
+const savedProjectUrl = ref('')
 
 onMounted(() => {
   const draft = loadLocalDraft()
@@ -44,6 +45,11 @@ async function saveProject(): Promise<void> {
     store.setProjectIdentity(reference.id, reference.accessToken)
     saveLocalDraft(store.toProject())
     remoteProjectId.value = reference.id
+    savedProjectUrl.value = router.resolve({
+      name: 'project',
+      params: { id: reference.id },
+      query: { token: reference.accessToken },
+    }).href
     savedMessage.value = true
     window.setTimeout(() => { savedMessage.value = false }, 3000)
   } catch (error) {
@@ -115,6 +121,7 @@ async function saveProject(): Promise<void> {
         <OrderMetadataForm :customer="store.customer" :project="project" @change="store.setCustomerField" @save="saveProject" />
         <p v-if="savedMessage" class="saved-message" role="status">
           Projekt zapisany w Supabase. ID: <code>{{ remoteProjectId }}</code>
+          <a :href="savedProjectUrl">Otwórz zapisany projekt</a>
         </p>
         <p v-if="saveError" class="form-error" role="alert">{{ saveError }}</p>
       </div>

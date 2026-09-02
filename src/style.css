@@ -81,6 +81,20 @@ button, select, input[type='checkbox'] { cursor: pointer; }
 .primary-button:hover { background: #343b45; }
 .saved-message { margin: 0; padding: 12px 16px; border: 1px solid #c9e4d4; border-radius: 12px; color: #28683f; background: #edf9f1; font-size: .8rem; }
 .saved-message code { font-family: ui-monospace, monospace; font-size: .75rem; }
+.saved-message a { display: inline-block; margin-left: 8px; color: #1e5d39; font-weight: 750; }
+.project-card { max-width: 720px; margin: 0 auto; }
+.project-card__header { display: flex; align-items: flex-start; gap: 14px; padding-bottom: 20px; border-bottom: 1px solid #edf0f2; }
+.project-card__header h2 { margin: 0; font-size: 1.18rem; }
+.project-card__header p { margin: 6px 0 0; color: #707a88; line-height: 1.5; font-size: .88rem; }
+.project-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; }
+.project-meta div { padding: 12px; border: 1px solid #e2e6ea; border-radius: 10px; background: #fbfcfd; }
+.project-meta dt { color: #7a8490; font-size: .72rem; }
+.project-meta dd { margin: 4px 0 0; font-size: .86rem; font-weight: 700; overflow-wrap: anywhere; }
+.status-card { padding: 24px; border: 1px solid #dfe3e8; border-radius: 22px; background: #fff; box-shadow: 0 16px 40px rgba(28, 36, 48, .06); }
+.status-card--error { border-color: #f0c7c1; background: #fff8f6; }
+.status-card h2 { margin: 0; font-size: 1.1rem; }
+.status-card p { margin: 8px 0 0; color: #707a88; line-height: 1.5; }
+.status-card a { display: inline-block; margin-top: 16px; color: #1e5d39; font-weight: 750; }
 
 @media (max-width: 960px) {
   .workspace { grid-template-columns: 1fr; }
@@ -98,6 +112,7 @@ button, select, input[type='checkbox'] { cursor: pointer; }
   .preview-panel__header { align-items: flex-start; padding: 18px; }
   .preview-stage { min-height: 290px; padding: 24px 18px; }
   .preview-panel__meta { flex-direction: column; padding: 12px 18px; }
+  .project-meta { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: no-preference) {

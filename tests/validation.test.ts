@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { createDefaultConfiguration } from '../src/domain/signProject'
-import { orderMetadataSchema, signProjectConfigurationSchema } from '../src/domain/validation'
+import { orderMetadataSchema, projectLookupSchema, signProjectConfigurationSchema } from '../src/domain/validation'
 
 describe('walidacja projektu', () => {
   it('wymaga kompletnych danych zamówienia', () => {
@@ -32,5 +32,13 @@ describe('walidacja projektu', () => {
     const configuration = createDefaultConfiguration('20x25', 3)
 
     expect(signProjectConfigurationSchema.safeParse(configuration).success).toBe(true)
+  })
+
+  it('wymaga UUID projektu i tokenu przy odczycie', () => {
+    expect(projectLookupSchema.safeParse({ id: 'not-an-id', accessToken: 'not-a-token' }).success).toBe(false)
+    expect(projectLookupSchema.safeParse({
+      id: '00000000-0000-0000-0000-000000000001',
+      accessToken: '00000000-0000-0000-0000-000000000002',
+    }).success).toBe(true)
   })
 })

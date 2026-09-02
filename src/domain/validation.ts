@@ -11,6 +11,11 @@ export const orderMetadataSchema = z.object({
   orderNumber: nonEmptyText(80),
 })
 
+export const projectLookupSchema = z.object({
+  id: z.string().uuid(),
+  accessToken: z.string().uuid(),
+})
+
 export const signLineSchema = z.object({
   id: nonEmptyText(80),
   text: z.string().max(200),
