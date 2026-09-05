@@ -5,8 +5,8 @@ const emit = defineEmits<{ 'update:modelValue': [value: number] }>()
 
 <template>
   <fieldset class="field">
-    <legend class="field__label">Liczba linii</legend>
-    <div class="segmented" aria-label="Liczba linii tekstu">
+    <legend class="field__label">Liczba obszarów</legend>
+    <div class="segmented" aria-label="Liczba obszarów tekstu">
       <button
         v-for="count in options"
         :key="count"

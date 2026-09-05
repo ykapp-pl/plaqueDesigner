@@ -4,6 +4,7 @@ import { getSignSizeById } from '../src/config/signSizes'
 import {
   getHorizontalTextPosition,
   getLineZones,
+  getPositionedLineZones,
   getMountingHoleCenters,
   getMountingHoleRadius,
   getVerticalTextPosition,
@@ -58,5 +59,17 @@ describe('geometria tabliczki', () => {
     expect(getVerticalTextPosition(zone, 'top', 10)).toBe(32)
     expect(getVerticalTextPosition(zone, 'center', 10)).toBeCloseTo(48.333333)
     expect(getVerticalTextPosition(zone, 'bottom', 10)).toBe(68)
+  })
+
+  it('buduje obszary o zadanych wysokościach, sumujące się do pola roboczego', () => {
+    const lines = getLineZones({ x: 10, y: 10, width: 230, height: 230 }, 3).map((_, index) => ({
+      areaHeightMm: [120, 55, 55][index], offsetXMm: 0, offsetYMm: 0,
+    }))
+    const zones = getPositionedLineZones(
+      { x: 10, y: 10, width: 230, height: 230 },
+      lines as any,
+    )
+    expect(zones.map((zone) => zone.height)).toEqual([120, 55, 55])
+    expect(zones.at(-1)!.y + zones.at(-1)!.height).toBe(240)
   })
 })

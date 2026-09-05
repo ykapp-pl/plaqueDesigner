@@ -113,8 +113,7 @@ export type Database = {
           access_token: string
           configuration: Json
           created_at: string
-          full_name: string
-          id: string
+            id: string
           login: string
           order_number: string
           size_id: string
@@ -124,8 +123,7 @@ export type Database = {
           access_token?: string
           configuration: Json
           created_at?: string
-          full_name: string
-          id?: string
+            id?: string
           login: string
           order_number: string
           size_id: string
@@ -135,8 +133,7 @@ export type Database = {
           access_token?: string
           configuration?: Json
           created_at?: string
-          full_name?: string
-          id?: string
+            id?: string
           login?: string
           order_number?: string
           size_id?: string

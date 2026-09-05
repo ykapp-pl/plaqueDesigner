@@ -15,12 +15,26 @@ function updateFontSize(event: Event): void {
   input.value = String(safeValue)
   emit('change', { fontSizeMm: safeValue })
 }
+function updateAreaHeight(event: Event): void {
+  const input = event.target as HTMLInputElement
+  const value = Number(input.value)
+  const height = Number.isFinite(value) ? value : 0
+  input.value = String(height)
+  emit('change', { areaHeightMm: height })
+}
+
+// Compatibility fields for drafts created before vertical area resizing.
+function updateOffset(axis: 'offsetXMm' | 'offsetYMm', event: Event): void {
+  const input = event.target as HTMLInputElement
+  const value = Number(input.value)
+  emit('change', { [axis]: Number.isFinite(value) ? value : 0 })
+}
 </script>
 
 <template>
   <section class="line-card" :aria-labelledby="`line-title-${line.id}`">
     <div class="line-card__heading">
-      <h3 :id="`line-title-${line.id}`">Linia {{ index + 1 }}</h3>
+      <h3 :id="`line-title-${line.id}`">Obszar {{ index + 1 }}</h3>
       <span>{{ line.fontSizeMm }} mm</span>
     </div>
 
@@ -102,5 +116,22 @@ function updateFontSize(event: Event): void {
         </div>
       </fieldset>
     </div>
+    <div class="legacy-line-position" aria-hidden="true">
+      <input type="number" :value="line.offsetXMm" @input="updateOffset('offsetXMm', $event)" />
+      <input type="number" :value="line.offsetYMm" @input="updateOffset('offsetYMm', $event)" />
+      <button type="button" @click="emit('change', { offsetXMm: 0, offsetYMm: 0 })">reset</button>
+    </div>
+    <fieldset class="field line-position">
+      <legend class="field__label">Wysokość obszaru</legend>
+      <div class="line-card__row">
+        <label class="field">
+          <span class="field__label">Wysokość (mm)</span>
+          <input class="control" type="number" min="1" step="0.5" :value="line.areaHeightMm" @input="updateAreaHeight" />
+          <span class="field__hint">Pozostałe obszary dopasują się automatycznie.</span>
+        </label>
+      </div>
+      <span class="field__hint">Zmiana działa tylko w pionie, a suma wysokości zawsze odpowiada polu roboczemu.</span>
+      <button class="legacy-reset" type="button" @click="emit('change', { offsetXMm: 0, offsetYMm: 0 })">reset</button>
+    </fieldset>
   </section>
 </template>

@@ -12,7 +12,6 @@ interface RemoteProject {
   access_token: string
   created_at: string
   updated_at: string
-  full_name: string
   login: string
   order_number: string
   configuration: SignProject['configuration']
@@ -30,7 +29,6 @@ function mapRemoteProject(record: RemoteProject): SignProject {
     createdAt: record.created_at,
     updatedAt: record.updated_at,
     customer: {
-      fullName: record.full_name,
       login: record.login,
       orderNumber: record.order_number,
     },

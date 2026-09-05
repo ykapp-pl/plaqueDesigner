@@ -78,7 +78,7 @@ onMounted(() => {
             <dd>{{ store.selectedSize.id.replace('x', ' × ') }} cm</dd>
           </div>
           <div>
-            <dt>Linie tekstu</dt>
+            <dt>Obszary tekstu</dt>
             <dd>{{ store.configuration.lineCount }}</dd>
           </div>
           <div>

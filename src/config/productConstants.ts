@@ -5,3 +5,5 @@ export const TEXT_SAFE_PADDING_MM = 2
 export const DEFAULT_FONT_SIZE_MM = 20
 export const MIN_FONT_SIZE_MM = 4
 export const MAX_FONT_SIZE_MM = 80
+export const AREA_DIVIDER_HEIGHT_MM = 4
+export const AREA_DIVIDER_SIDE_MARGIN_MM = 10

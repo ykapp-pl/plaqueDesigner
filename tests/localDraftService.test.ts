@@ -8,7 +8,7 @@ describe('localDraftService', () => {
 
   it('zachowuje pełną konfigurację w round-trip JSON', () => {
     const project = {
-      customer: { fullName: 'Jan Kowalski', login: 'jkowalski', orderNumber: '123' },
+      customer: { login: 'jkowalski', orderNumber: '123' },
       configuration: createDefaultConfiguration('20x25', 2),
     }
     project.configuration.lines[0].text = 'KOWALSCY'
@@ -26,7 +26,7 @@ describe('localDraftService', () => {
 
   it('zapisuje i odczytuje szkic z localStorage', () => {
     const project = {
-      customer: { fullName: '', login: '', orderNumber: '' },
+      customer: { login: '', orderNumber: '' },
       configuration: createDefaultConfiguration(),
     }
 

@@ -2,6 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
+import ColorSelector from '../components/configurator/ColorSelector.vue'
 import LineCountSelector from '../components/configurator/LineCountSelector.vue'
 import LineEditor from '../components/configurator/LineEditor.vue'
 import OptionToggle from '../components/configurator/OptionToggle.vue'
@@ -94,7 +95,7 @@ async function saveProject(): Promise<void> {
           <OptionToggle
             :model-value="store.configuration.backgroundEnabled"
             title="Pełne tło"
-            description="Zmniejsza obszar roboczy tekstu"
+            description="Dodaje ramkę w kolorze liter i zmniejsza obszar tekstu"
             @update:model-value="store.setBackgroundEnabled"
           />
           <OptionToggle
@@ -103,6 +104,17 @@ async function saveProject(): Promise<void> {
             description="4 otwory Ø5 mm w narożnikach"
             @update:model-value="store.setMountingHolesEnabled"
           />
+          <OptionToggle
+            :model-value="store.configuration.dividersEnabled"
+            title="Linie dzielące obszary"
+            description="Pasy 4 mm z marginesem 10 mm od boków"
+            @update:model-value="store.setDividersEnabled"
+          />
+        </div>
+
+        <div class="settings-grid">
+          <ColorSelector v-model="store.configuration.printColor" label="Kolor wydruku" />
+          <ColorSelector v-if="store.configuration.backgroundEnabled" v-model="store.configuration.backgroundColor" label="Kolor tła (ramka i litery)" />
         </div>
 
         <div class="line-list">

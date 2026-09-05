@@ -30,16 +30,16 @@ function isValidProject(project: any): boolean {
   }
   const size = sizes[configuration?.sizeId]
   if (!customer || !configuration || !size) return false
-  if (typeof customer.fullName !== 'string' || customer.fullName.trim().length === 0 || customer.fullName.length > 120) return false
   if (typeof customer.login !== 'string' || customer.login.trim().length === 0 || customer.login.length > 80) return false
   if (typeof customer.orderNumber !== 'string' || customer.orderNumber.trim().length === 0 || customer.orderNumber.length > 80) return false
   if (configuration.schemaVersion !== 1 || configuration.widthMm !== size.width || configuration.heightMm !== size.height) return false
   if (!size.lines.includes(configuration.lineCount) || !Array.isArray(configuration.lines) || configuration.lines.length !== configuration.lineCount) return false
-  if (typeof configuration.backgroundEnabled !== 'boolean' || typeof configuration.mountingHolesEnabled !== 'boolean') return false
+  if (typeof configuration.backgroundEnabled !== 'boolean' || typeof configuration.dividersEnabled !== 'boolean' || typeof configuration.mountingHolesEnabled !== 'boolean') return false
   return configuration.lines.every((line: any) =>
     typeof line?.id === 'string' && line.id.length > 0 && line.id.length <= 80 &&
     typeof line.text === 'string' && line.text.length <= 200 &&
     typeof line.fontFamily === 'string' && line.fontFamily.length > 0 && line.fontFamily.length <= 120 &&
+    (line.areaHeightMm === undefined || (typeof line.areaHeightMm === 'number' && Number.isFinite(line.areaHeightMm) && line.areaHeightMm >= 0)) &&
     typeof line.fontSizeMm === 'number' && line.fontSizeMm >= 4 && line.fontSizeMm <= 80 &&
     ['left', 'center', 'right'].includes(line.horizontalAlign) &&
     ['top', 'center', 'bottom'].includes(line.verticalAlign),
@@ -60,7 +60,6 @@ export default {
       const { data, error } = await context.supabaseAdmin
         .from('projects')
         .insert({
-          full_name: project.customer.fullName,
           login: project.customer.login,
           order_number: project.customer.orderNumber,
           size_id: project.configuration.sizeId,
@@ -77,7 +76,7 @@ export default {
       if (!isUuid(body.id) || !isUuid(body.accessToken)) return response({ error: 'Invalid project reference' }, 400)
       const { data, error } = await context.supabaseAdmin
         .from('projects')
-        .select('id, access_token, created_at, updated_at, full_name, login, order_number, configuration')
+        .select('id, access_token, created_at, updated_at, login, order_number, configuration')
         .eq('id', body.id)
         .eq('access_token', body.accessToken)
         .maybeSingle()

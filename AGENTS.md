@@ -109,9 +109,10 @@ Dla N linii:
 ## Dane zamówienia
 
 Wymagane:
-- `fullName`
-- `login`
-- `orderNumber`
+- `login` Allegro
+- `orderNumber` Allegro
+
+Nie zbieraj imienia ani nazwiska klienta.
 
 ## Zakres poza MVP
 

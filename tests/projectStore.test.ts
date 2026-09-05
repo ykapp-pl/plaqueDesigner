@@ -46,4 +46,24 @@ describe('projectStore', () => {
     expect(project.configuration.lines[0].text).toBe('KOWALSCY')
     expect(project.configuration).not.toBe(store.configuration)
   })
+
+  it('zmienia wysokość wybranego obszaru i zachowuje sumę pola roboczego', () => {
+    const store = useProjectStore()
+    store.setLineCount(3)
+
+    store.updateLine(0, { areaHeightMm: 120 })
+
+    store.configuration.lines.forEach((line, index) => {
+      expect(line.areaHeightMm).toBeCloseTo([120, 65, 65][index])
+    })
+    expect(store.configuration.lines.reduce((sum, line) => sum + line.areaHeightMm, 0)).toBe(250)
+  })
+
+  it('włącza i wyłącza linie dzielące obszary', () => {
+    const store = useProjectStore()
+    store.setDividersEnabled(true)
+    expect(store.configuration.dividersEnabled).toBe(true)
+    store.setDividersEnabled(false)
+    expect(store.configuration.dividersEnabled).toBe(false)
+  })
 })

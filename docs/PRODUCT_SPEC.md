@@ -252,7 +252,6 @@ Dodaj niewielki wewnętrzny `TEXT_SAFE_PADDING_MM` jako stałą konfiguracyjną,
 
 ```ts
 export interface OrderMetadata {
-  fullName: string
   login: string
   orderNumber: string
 }
@@ -331,5 +330,5 @@ MVP jest gotowe, gdy:
 - projekt można zapisać,
 - projekt można pobrać po ID,
 - odczytany projekt daje ten sam podgląd i ustawienia,
-- zapis obejmuje imię i nazwisko, login i numer zamówienia,
+- zapis obejmuje login Allegro i numer zamówienia Allegro,
 - testy logiki geometrii oraz walidacji przechodzą.

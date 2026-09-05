@@ -5,7 +5,7 @@ import { orderMetadataSchema, projectLookupSchema, signProjectConfigurationSchem
 
 describe('walidacja projektu', () => {
   it('wymaga kompletnych danych zamówienia', () => {
-    const result = orderMetadataSchema.safeParse({ fullName: ' ', login: 'jan', orderNumber: '' })
+    const result = orderMetadataSchema.safeParse({ login: ' ', orderNumber: '' })
 
     expect(result.success).toBe(false)
   })

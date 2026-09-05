@@ -126,7 +126,6 @@ Następnie przygotuj migrację tworzącą tabelę public.projects:
 - access_token uuid not null unique default gen_random_uuid()
 - created_at timestamptz not null default now()
 - updated_at timestamptz not null default now()
-- full_name text not null
 - login text not null
 - order_number text not null
 - size_id text not null
@@ -156,9 +155,11 @@ Nie używaj service-role key po stronie frontendu.
 # 6. RLS — ważne
 
 Projekt przechowuje:
-- imię i nazwisko,
-- login,
-- numer zamówienia.
+- login Allegro,
+- numer zamówienia Allegro.
+
+Nie zbieraj imienia ani nazwiska. Starsza, opcjonalna kolumna `full_name` może
+pozostać w istniejącej tabeli wyłącznie dla kompatybilności wstecznej.
 
 To są dane, których nie należy udostępniać przez publiczne `SELECT *`.
 
@@ -249,7 +250,6 @@ Następnie skonfiguruj createClient<Database>(...).
 
 ```ts
 export interface CreateProjectInput {
-  fullName: string
   login: string
   orderNumber: string
   sizeId: string

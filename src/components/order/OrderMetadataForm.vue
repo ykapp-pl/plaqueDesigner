@@ -31,27 +31,14 @@ function submit(): void {
       <span class="step-badge">2</span>
       <div>
         <h2 id="order-title">Dane zamówienia</h2>
-        <p>Te dane pozwolą przypisać projekt do właściwego zamówienia.</p>
+      <p>Podaj dane Allegro potrzebne do przypisania projektu do zamówienia.</p>
       </div>
     </div>
 
     <form class="order-form" novalidate @submit.prevent="submit">
-      <label class="field">
-        <span class="field__label">Imię i nazwisko</span>
-        <input
-          class="control"
-          autocomplete="name"
-          maxlength="120"
-          :value="customer.fullName"
-          :aria-invalid="Boolean(fieldError('fullName'))"
-          @input="emit('change', 'fullName', ($event.target as HTMLInputElement).value)"
-        />
-        <span v-if="fieldError('fullName')" class="field__error">{{ fieldError('fullName') }}</span>
-      </label>
-
-      <div class="order-form__row">
+      <div class="order-form__row order-form__row--required-data">
         <label class="field">
-          <span class="field__label">Login</span>
+          <span class="field__label">Login Allegro</span>
           <input
             class="control"
             autocomplete="username"
@@ -64,7 +51,7 @@ function submit(): void {
         </label>
 
         <label class="field">
-          <span class="field__label">Numer zamówienia</span>
+          <span class="field__label">Numer zamówienia Allegro</span>
           <input
             class="control"
             inputmode="numeric"
@@ -78,7 +65,7 @@ function submit(): void {
       </div>
 
       <p v-if="submitted && !result.success" class="form-error" role="alert">
-        Uzupełnij dane zamówienia i tekst wszystkich wybranych linii.
+        Uzupełnij dane zamówienia i tekst wszystkich wybranych obszarów.
       </p>
       <button type="submit" class="primary-button">Zapisz projekt</button>
     </form>

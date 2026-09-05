@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
+import { getLetterColor, getSignColorHex } from '../../config/signColors'
 import type { SignSizeDefinition } from '../../config/signSizes'
 import {
   getHorizontalTextPosition,
-  getLineZones,
+  getAreaZones,
+  getAreaDividerRects,
   getMountingHoleCenters,
   getMountingHoleRadius,
   getVerticalTextPosition,
@@ -19,7 +21,8 @@ const props = defineProps<{
 
 const showGuides = ref(false)
 const workArea = computed(() => getWorkArea(props.size, props.configuration.backgroundEnabled))
-const zones = computed(() => getLineZones(workArea.value, props.configuration.lineCount))
+const zones = computed(() => getAreaZones(workArea.value, props.configuration.lines))
+const dividers = computed(() => getAreaDividerRects(workArea.value, zones.value, props.size.widthMm))
 const holes = computed(() => getMountingHoleCenters(props.size.widthMm, props.size.heightMm))
 </script>
 
@@ -32,7 +35,7 @@ const holes = computed(() => getMountingHoleCenters(props.size.widthMm, props.si
       </div>
       <label class="guide-toggle">
         <input v-model="showGuides" type="checkbox" />
-        Linie pomocnicze
+        Obszary pomocnicze
       </label>
     </div>
 
@@ -44,13 +47,31 @@ const holes = computed(() => getMountingHoleCenters(props.size.widthMm, props.si
         :aria-label="`Podgląd tabliczki ${size.id.replace('x', ' na ')} centymetrów`"
       >
         <rect
-          x="1"
-          y="1"
-          :width="size.widthMm - 2"
-          :height="size.heightMm - 2"
-          rx="3"
-          :class="configuration.backgroundEnabled ? 'sign-base sign-base--filled' : 'sign-base'"
+          x="0"
+          y="0"
+          :width="size.widthMm"
+          :height="size.heightMm"
+          class="sign-base"
+          :fill="getSignColorHex(configuration.printColor)"
         />
+        <path
+          v-if="configuration.backgroundEnabled"
+          class="sign-frame"
+          :fill="getSignColorHex(configuration.backgroundColor)"
+          fill-rule="evenodd"
+          :d="`M0 0H${size.widthMm}V${size.heightMm}H0Z M${workArea.x} ${workArea.y}h${workArea.width}v${workArea.height}h${-workArea.width}Z`"
+        />
+        <g v-if="configuration.dividersEnabled" class="area-dividers" aria-label="Linie dzielące obszary">
+          <rect
+            v-for="(divider, index) in dividers"
+            :key="index"
+            :x="divider.x"
+            :y="divider.y"
+            :width="divider.width"
+            :height="divider.height"
+            :fill="getLetterColor(configuration.backgroundEnabled, configuration.backgroundColor, configuration.printColor)"
+          />
+        </g>
 
         <g v-if="showGuides" class="guides" aria-hidden="true">
           <rect
@@ -77,9 +98,10 @@ const holes = computed(() => getMountingHoleCenters(props.size.widthMm, props.si
           :text-anchor="getHorizontalTextPosition(zones[index], line.horizontalAlign).textAnchor"
           :font-family="line.fontFamily"
           :font-size="line.fontSizeMm"
-          :class="configuration.backgroundEnabled ? 'sign-text sign-text--on-dark' : 'sign-text'"
+          class="sign-text"
+          :fill="getLetterColor(configuration.backgroundEnabled, configuration.backgroundColor, configuration.printColor)"
         >
-          {{ line.text || `Linia ${index + 1}` }}
+          {{ line.text || `Obszar ${index + 1}` }}
         </text>
 
         <g v-if="configuration.mountingHolesEnabled" class="mounting-holes">

@@ -2,9 +2,11 @@ import {
   MOUNTING_HOLE_CENTER_INSET_MM,
   MOUNTING_HOLE_RADIUS_MM,
   TEXT_SAFE_PADDING_MM,
+  AREA_DIVIDER_HEIGHT_MM,
+  AREA_DIVIDER_SIDE_MARGIN_MM,
 } from '../config/productConstants'
 import type { SignSizeDefinition } from '../config/signSizes'
-import type { HorizontalAlign, VerticalAlign } from './signProject'
+import type { HorizontalAlign, VerticalAlign, SignLine } from './signProject'
 
 export interface WorkArea {
   x: number
@@ -51,6 +53,59 @@ export function getLineZones(workArea: WorkArea, lineCount: number): LineZone[] 
     y: workArea.y + index * zoneHeight,
     width: workArea.width,
     height: zoneHeight,
+  }))
+}
+
+export function getPositionedLineZones(workArea: WorkArea, lines: SignLine[]): LineZone[] {
+  const hasCustomHeights = lines.some((line) => line.areaHeightMm > 0)
+  if (!hasCustomHeights) {
+    return getLineZones(workArea, lines.length).map((zone, index) => ({
+      ...zone,
+      // Compatibility for drafts created before vertical resizing was added.
+      x: zone.x + lines[index].offsetXMm,
+      y: zone.y + lines[index].offsetYMm,
+    }))
+  }
+
+  const total = lines.reduce((sum, line) => sum + Math.max(0, line.areaHeightMm), 0)
+  let y = workArea.y
+  return lines.map((line, index) => {
+    const height = total > 0 ? workArea.height * Math.max(0, line.areaHeightMm) / total : workArea.height / lines.length
+    const zone = {
+      index,
+      x: workArea.x + (lines[index].offsetXMm || 0),
+      y: y + (lines[index].offsetYMm || 0),
+      width: workArea.width,
+      height,
+    }
+    y += height
+    return zone
+  })
+}
+
+export interface AreaDivider {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+export const getAreaZones = getPositionedLineZones
+
+export function getNormalizedAreaHeights(workArea: WorkArea, lines: SignLine[]): number[] {
+  const total = lines.reduce((sum, line) => sum + Math.max(0, line.areaHeightMm), 0)
+  if (total <= 0) return lines.map(() => workArea.height / lines.length)
+  return lines.map((line) => workArea.height * Math.max(0, line.areaHeightMm) / total)
+}
+
+export function getAreaDividerRects(workArea: WorkArea, zones: LineZone[], plaqueWidthMm: number): AreaDivider[] {
+  const width = Math.max(0, plaqueWidthMm - 2 * AREA_DIVIDER_SIDE_MARGIN_MM)
+  const x = AREA_DIVIDER_SIDE_MARGIN_MM
+  return zones.slice(0, -1).map((zone) => ({
+    x,
+    y: zone.y + zone.height - AREA_DIVIDER_HEIGHT_MM / 2,
+    width,
+    height: AREA_DIVIDER_HEIGHT_MM,
   }))
 }
 

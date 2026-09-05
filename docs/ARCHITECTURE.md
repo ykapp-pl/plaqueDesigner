@@ -154,7 +154,6 @@ create table public.projects (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
 
-  full_name text not null,
   login text not null,
   order_number text not null,
 
@@ -176,6 +175,10 @@ create index projects_created_at_idx
 ```
 
 `configuration` jest źródłem prawdy dla projektu.
+
+Starsza wersja tabeli może zawierać opcjonalną kolumnę `full_name`, ale aplikacja
+jej nie zbiera, nie zapisuje i nie odczytuje. Nowe dane identyfikacyjne projektu
+to wyłącznie login Allegro oraz numer zamówienia Allegro.
 
 Bezpośredni dostęp ról `anon` i `authenticated` do tabeli jest odebrany. Zapis i odczyt odbywa się przez Edge Function `projects`, która wymaga pary `id` + `access_token` przy odczycie. Klient używa wyłącznie publicznego klucza `publishable`; operacje administracyjne pozostają po stronie Supabase Edge Function.
 

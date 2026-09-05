@@ -1,3 +1,4 @@
+import type { SignColor } from '../config/signColors'
 import {
   DEFAULT_FONT_SIZE_MM,
   MAX_FONT_SIZE_MM,
@@ -13,6 +14,9 @@ export interface SignLine {
   id: string
   text: string
   fontFamily: string
+  areaHeightMm: number
+  offsetXMm: number
+  offsetYMm: number
   fontSizeMm: number
   horizontalAlign: HorizontalAlign
   verticalAlign: VerticalAlign
@@ -25,12 +29,14 @@ export interface SignProjectConfiguration {
   heightMm: number
   lineCount: number
   lines: SignLine[]
+  backgroundColor: SignColor
+  printColor: SignColor
   backgroundEnabled: boolean
+  dividersEnabled: boolean
   mountingHolesEnabled: boolean
 }
 
 export interface OrderMetadata {
-  fullName: string
   login: string
   orderNumber: string
 }
@@ -48,6 +54,9 @@ export function createDefaultLine(index: number): SignLine {
   return {
     id: `line-${index + 1}`,
     text: '',
+    areaHeightMm: 0,
+    offsetXMm: 0,
+    offsetYMm: 0,
     fontFamily: DEFAULT_FONT_FAMILY,
     fontSizeMm: DEFAULT_FONT_SIZE_MM,
     horizontalAlign: 'center',
@@ -77,8 +86,14 @@ export function createDefaultConfiguration(sizeId = '25x25', lineCount = 1): Sig
     widthMm: size.widthMm,
     heightMm: size.heightMm,
     lineCount: resolvedLineCount,
-    lines: Array.from({ length: resolvedLineCount }, (_, index) => createDefaultLine(index)),
+    lines: Array.from({ length: resolvedLineCount }, (_, index) => ({
+      ...createDefaultLine(index),
+      areaHeightMm: size.heightMm / resolvedLineCount,
+    })),
+    backgroundColor: 'black',
+    printColor: 'white',
     backgroundEnabled: false,
+    dividersEnabled: false,
     mountingHolesEnabled: false,
   }
 }
