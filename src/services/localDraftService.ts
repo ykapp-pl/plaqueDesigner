@@ -16,18 +16,18 @@ export function deserializeProject(serialized: string): SignProject | null {
   }
 }
 
-export function saveLocalDraft(project: SignProject): boolean {
+export function saveLocalDraft(project: SignProject, offerCode?: string): boolean {
   try {
-    localStorage.setItem(LOCAL_DRAFT_KEY, serializeProject(project))
+    localStorage.setItem(offerCode ? `${LOCAL_DRAFT_KEY}:${offerCode}` : LOCAL_DRAFT_KEY, serializeProject(project))
     return true
   } catch {
     return false
   }
 }
 
-export function loadLocalDraft(): SignProject | null {
+export function loadLocalDraft(offerCode?: string): SignProject | null {
   try {
-    const serialized = localStorage.getItem(LOCAL_DRAFT_KEY)
+    const serialized = localStorage.getItem(offerCode ? `${LOCAL_DRAFT_KEY}:${offerCode}` : LOCAL_DRAFT_KEY)
     return serialized ? deserializeProject(serialized) : null
   } catch {
     return null

@@ -299,21 +299,18 @@ Zapisuj także `schemaVersion`, aby można było migrować stare projekty po roz
 
 ## 10. URL
 
-MVP powinno akceptować co najmniej:
+Kreator wymaga linku oferty z losowym kodem:
 ```text
-/configurator?size=25x25
+/configurator?k=<32 losowe znaki szesnastkowe>
 ```
 
-Parametr `size`:
-- jest wartością startową,
-- musi należeć do `SIGN_SIZES`,
-- nie może tworzyć dowolnych wymiarów.
+Kod wskazuje rekord `offer_links`, odczytywany wyłącznie przez serwer. Ustala rozmiar ze `SIGN_SIZES`, obecność tła oraz dostępność brązowego koloru premium w obu selektorach kolorów. Rozmiar i tło są prezentowane informacyjnie, bez możliwości edycji. Czarne i białe kolory są zawsze dostępne.
 
-Architektura powinna umożliwić późniejsze dodanie parametrów:
-- `background`,
-- `mountingHoles`,
-- `lines`,
-- źródło / marketplace.
+Brak, powtórzony parametr `k`, nieprawidłowy lub wyłączony kod blokuje kreator komunikatem: „Aby otworzyć kreator, skorzystaj z linku w ofercie lub wiadomości e-mail dotyczącej zamówienia.” Awaria weryfikacji również blokuje formularz, ale wyświetla komunikat o problemie z połączeniem.
+
+Jawne parametry `size`, `background` i `premium` nie sterują kreatorem. Serwer weryfikuje kod oraz zgodność konfiguracji również przy zapisie. Szkice przeglądarki są rozdzielone według kodu i nie mogą nadpisać ograniczeń oferty. Zapisany projekt nadal otwiera się przez `/project/:id?token=...`.
+
+Link jest wielokrotnego użytku i można go przekazać dalej. Nie potwierdza zakupu; wskazuje wariant oferty. Zestaw 24 linków (6 formatów × tło tak/nie × premium tak/nie) jest generowany w bazie, poza publicznym repozytorium.
 
 ---
 

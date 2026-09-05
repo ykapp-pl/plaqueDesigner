@@ -1,8 +1,9 @@
-import { computed, ref, toRaw } from 'vue'
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 
 import { getSignSizeById, SIGN_SIZES } from '../config/signSizes'
 import { getNormalizedAreaHeights, getWorkArea } from '../domain/geometry'
+import type { Offer } from '../domain/offer'
 import {
   createDefaultConfiguration,
   createDefaultLine,
@@ -18,9 +19,11 @@ export const useProjectStore = defineStore('project', () => {
   const customer = ref<OrderMetadata>({ login: '', orderNumber: '' })
   const projectId = ref<string>()
   const accessToken = ref<string>()
+  const offer = ref<Offer | null>(null)
   const selectedSize = computed(() => getSignSizeById(configuration.value.sizeId) ?? SIGN_SIZES[0])
 
   function setSize(sizeId: string): void {
+    if (offer.value && sizeId !== offer.value.sizeId) return
     const nextSize = getSignSizeById(sizeId)
     if (!nextSize) return
 
@@ -82,6 +85,7 @@ export const useProjectStore = defineStore('project', () => {
   }
 
   function setBackgroundEnabled(enabled: boolean): void {
+    if (offer.value && enabled !== offer.value.backgroundEnabled) return
     const previousHeight = getWorkArea(selectedSize.value, configuration.value.backgroundEnabled).height
     configuration.value.backgroundEnabled = enabled
     const nextHeight = getWorkArea(selectedSize.value, enabled).height
@@ -108,8 +112,30 @@ export const useProjectStore = defineStore('project', () => {
       id: projectId.value,
       accessToken: accessToken.value,
       customer: { ...customer.value },
-      configuration: structuredClone(toRaw(configuration.value)),
+      configuration: {
+        ...configuration.value,
+        lines: configuration.value.lines.map(line => ({ ...line })),
+      },
     }
+  }
+
+  function enforceOffer(): void {
+    if (!offer.value) return
+    if (configuration.value.sizeId !== offer.value.sizeId) setSize(offer.value.sizeId)
+    setBackgroundEnabled(offer.value.backgroundEnabled)
+    if (!offer.value.premiumAvailable) {
+      if (configuration.value.printColor === 'wood') configuration.value.printColor = 'white'
+      if (configuration.value.backgroundColor === 'wood') configuration.value.backgroundColor = 'black'
+    }
+  }
+
+  function startOffer(nextOffer: Offer, draft: SignProject | null): void {
+    offer.value = nextOffer
+    projectId.value = undefined
+    accessToken.value = undefined
+    customer.value = draft ? { ...draft.customer } : { login: '', orderNumber: '' }
+    configuration.value = draft ? structuredClone(draft.configuration) : createDefaultConfiguration(nextOffer.sizeId)
+    enforceOffer()
   }
 
   function loadProject(project: SignProject): void {
@@ -125,6 +151,8 @@ export const useProjectStore = defineStore('project', () => {
   }
 
   return {
+    startOffer,
+    enforceOffer,
     configuration,
     customer,
     selectedSize,
