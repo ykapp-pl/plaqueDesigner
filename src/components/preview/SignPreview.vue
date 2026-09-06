@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, useId } from 'vue'
 
 import { getLetterColor, getSignColorHex } from '../../config/signColors'
 import type { SignSizeDefinition } from '../../config/signSizes'
@@ -17,8 +17,10 @@ import type { SignProjectConfiguration } from '../../domain/signProject'
 const props = defineProps<{
   configuration: SignProjectConfiguration
   size: SignSizeDefinition
+  readonly?: boolean
 }>()
 
+const titleId = useId()
 const showGuides = ref(false)
 const workArea = computed(() => getWorkArea(props.size, props.configuration.backgroundEnabled))
 const zones = computed(() => getAreaZones(workArea.value, props.configuration.lines))
@@ -27,13 +29,13 @@ const holes = computed(() => getMountingHoleCenters(props.size.widthMm, props.si
 </script>
 
 <template>
-  <section class="preview-panel" aria-labelledby="preview-title">
+  <section class="preview-panel" :aria-labelledby="titleId">
     <div class="preview-panel__header">
       <div>
-        <p class="eyebrow">Podgląd na żywo</p>
-        <h2 id="preview-title">{{ size.id.replace('x', ' × ') }} cm</h2>
+        <p class="eyebrow">{{ readonly ? 'Wizualizacja zapisanego projektu' : 'Podgląd na żywo' }}</p>
+        <h2 :id="titleId">{{ size.id.replace('x', ' × ') }} cm</h2>
       </div>
-      <label class="guide-toggle">
+      <label v-if="!readonly" class="guide-toggle">
         <input v-model="showGuides" type="checkbox" />
         Obszary pomocnicze
       </label>
