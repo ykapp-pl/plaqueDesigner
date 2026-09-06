@@ -58,6 +58,17 @@ describe('SignPreview', () => {
     expect(dividers.every((divider) => divider.attributes('width') === '230')).toBe(true)
     expect(dividers.every((divider) => divider.attributes('height') === '4')).toBe(true)
   })
+
+  it('ukrywa sterowanie w trybie wizualizacji zapisanej tabliczki', () => {
+    const configuration = createDefaultConfiguration('20x25')
+    const wrapper = mount(SignPreview, {
+      props: { configuration, size: getSignSizeById('20x25')!, readonly: true },
+    })
+
+    expect(wrapper.text()).toContain('Wizualizacja zapisanego projektu')
+    expect(wrapper.find('.guide-toggle').exists()).toBe(false)
+    expect(wrapper.findAll('input, select, textarea, button')).toHaveLength(0)
+  })
 })
 
 
