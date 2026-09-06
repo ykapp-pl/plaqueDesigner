@@ -327,5 +327,5 @@ MVP jest gotowe, gdy:
 - projekt można zapisać,
 - projekt można pobrać po ID,
 - odczytany projekt daje ten sam podgląd i ustawienia,
-- zapis obejmuje login Allegro i numer zamówienia Allegro,
+- zapis obejmuje nick zamawiającego i numer zamówienia,
 - testy logiki geometrii oraz walidacji przechodzą.

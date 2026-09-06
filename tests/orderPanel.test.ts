@@ -22,7 +22,7 @@ const project = (id: string, text: string): SignProject => ({
   id,
   createdAt: '2026-09-06T10:00:00.000Z',
   updatedAt: '2026-09-06T10:05:00.000Z',
-  customer: { login: 'allegro-login', orderNumber: '1234567890' },
+  customer: { login: 'nick-zamawiajacego', orderNumber: '1234567890' },
   configuration: {
     ...createDefaultConfiguration('20x25'),
     lines: [{ ...createDefaultConfiguration('20x25').lines[0], text }],

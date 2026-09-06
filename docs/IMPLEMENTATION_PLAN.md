@@ -111,8 +111,8 @@ Dokończyć model użytkowy zanim zostanie dodana baza.
 
 ## Zadania
 - formularz:
-  - login Allegro,
-  - numer zamówienia Allegro,
+  - nick zamawiającego,
+  - numer zamówienia,
 - Zod,
 - localStorage jako tymczasowa persistencja developerska,
 - serializacja pełnego `SignProject`,

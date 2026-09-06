@@ -4,7 +4,7 @@ import type { SignProject } from '../domain/signProject'
 import { signProjectSchema } from '../domain/validation'
 import { supabase } from '../lib/supabase'
 
-const orderNumberSchema = z.string().trim().min(1, 'Podaj numer zamówienia Allegro.').max(80, 'Numer zamówienia jest za długi.')
+const orderNumberSchema = z.string().trim().min(1, 'Podaj numer zamówienia.').max(80, 'Numer zamówienia jest za długi.')
 
 const remoteProjectSchema = z.object({
   id: z.string().uuid(),

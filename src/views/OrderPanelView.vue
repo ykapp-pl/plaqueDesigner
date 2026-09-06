@@ -99,7 +99,7 @@ async function signOut(): Promise<void> {
 async function search(nextOffset = 0, requestedOrderNumber = orderNumber.value.trim()): Promise<void> {
   const number = requestedOrderNumber.trim()
   if (!number) {
-    orderNumberError.value = 'Podaj numer zamówienia Allegro.'
+    orderNumberError.value = 'Podaj numer zamówienia.'
     return
   }
   if (number.length > 80) {
@@ -194,7 +194,7 @@ onUnmounted(() => {
           <div>
             <p class="eyebrow">Tylko odczyt</p>
             <h2 id="panel-search-title">Odtwórz zamówienie</h2>
-            <p>Wpisz numer zamówienia Allegro, aby wyświetlić wszystkie zapisane projekty bez możliwości edycji.</p>
+            <p>Wpisz numer zamówienia, aby wyświetlić wszystkie zapisane projekty bez możliwości edycji.</p>
           </div>
           <button class="secondary-button order-panel-logout" type="button" :disabled="isSigningOut" @click="signOut">
             {{ isSigningOut ? 'Wylogowanie…' : 'Wyloguj' }}
@@ -203,7 +203,7 @@ onUnmounted(() => {
 
         <form class="order-form order-panel-search" novalidate @submit.prevent="search()">
           <label class="field">
-            <span class="field__label">Numer zamówienia Allegro</span>
+            <span class="field__label">Numer zamówienia</span>
             <input
               v-model="orderNumber"
               class="control"

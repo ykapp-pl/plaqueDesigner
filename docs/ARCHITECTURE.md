@@ -178,7 +178,7 @@ create index projects_created_at_idx
 
 Starsza wersja tabeli może zawierać opcjonalną kolumnę `full_name`, ale aplikacja
 jej nie zbiera, nie zapisuje i nie odczytuje. Nowe dane identyfikacyjne projektu
-to wyłącznie login Allegro oraz numer zamówienia Allegro.
+to wyłącznie nick zamawiającego oraz numer zamówienia.
 
 Bezpośredni dostęp ról `anon` i `authenticated` do tabeli jest odebrany. Zapis i odczyt odbywa się przez Edge Function `projects`, która wymaga pary `id` + `access_token` przy odczycie. Klient używa wyłącznie publicznego klucza `publishable`; operacje administracyjne pozostają po stronie Supabase Edge Function.
 

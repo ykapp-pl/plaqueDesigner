@@ -16,13 +16,16 @@ describe('szczegóły zapisanego projektu', () => {
           id: '00000000-0000-0000-0000-000000000001',
           createdAt: '2026-09-06T10:00:00.000Z',
           updatedAt: '2026-09-06T10:05:00.000Z',
-          customer: { login: 'allegro-login', orderNumber: '1234567890' },
+          customer: { login: 'nick-zamawiajacego', orderNumber: '1234567890' },
           configuration,
         },
       },
     })
 
-    expect(wrapper.text()).toContain('allegro-login')
+    expect(wrapper.text()).toContain('Nick zamawiającego')
+    expect(wrapper.text()).toContain('nick-zamawiajacego')
+    expect(wrapper.text()).toContain('Numer zamówienia')
+    expect(wrapper.text()).not.toContain('Numer zamówienia Allegro')
     expect(wrapper.text()).toContain('1234567890')
     expect(wrapper.text()).toContain('KOWALSCY')
     expect(wrapper.text()).toContain('18')

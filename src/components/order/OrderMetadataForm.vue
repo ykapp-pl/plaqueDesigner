@@ -31,14 +31,14 @@ function submit(): void {
       <span class="step-badge">2</span>
       <div>
         <h2 id="order-title">Dane zamówienia</h2>
-      <p>Podaj dane Allegro potrzebne do przypisania projektu do zamówienia.</p>
+      <p>Podaj dane potrzebne do przypisania projektu do zamówienia.</p>
       </div>
     </div>
 
     <form class="order-form" novalidate @submit.prevent="submit">
       <div class="order-form__row order-form__row--required-data">
         <label class="field">
-          <span class="field__label">Login Allegro</span>
+          <span class="field__label">Nick zamawiającego</span>
           <input
             class="control"
             autocomplete="username"
@@ -51,7 +51,7 @@ function submit(): void {
         </label>
 
         <label class="field">
-          <span class="field__label">Numer zamówienia Allegro</span>
+          <span class="field__label">Numer zamówienia</span>
           <input
             class="control"
             inputmode="numeric"
@@ -66,6 +66,9 @@ function submit(): void {
 
       <p v-if="submitted && !result.success" class="form-error" role="alert">
         Uzupełnij dane zamówienia i tekst wszystkich wybranych obszarów.
+      </p>
+      <p class="order-form__notice">
+        Przed zapisaniem projektu dokładnie sprawdź wpisane treści i wybrane ustawienia. Kreator nie weryfikuje poprawności tekstu ani projektu — za ich treść i zgodność z zamówieniem odpowiada zamawiający. Jeśli potrzebujesz projektu przygotowanego na zamówienie lub tabliczki w niestandardowym rozmiarze, skontaktuj się z nami pod adresem <a href="mailto:ykapp.pl@gmail.com">ykapp.pl@gmail.com</a>, korzystając z danych kontaktowych podanych w ofercie.
       </p>
       <button type="submit" class="primary-button">Zapisz projekt</button>
     </form>
