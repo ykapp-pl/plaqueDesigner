@@ -1,18 +1,17 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import ColorSelector from '../components/configurator/ColorSelector.vue'
 import LineCountSelector from '../components/configurator/LineCountSelector.vue'
 import LineEditor from '../components/configurator/LineEditor.vue'
 import OptionToggle from '../components/configurator/OptionToggle.vue'
-import SizeSelector from '../components/configurator/SizeSelector.vue'
 import SignPreview from '../components/preview/SignPreview.vue'
 import OrderMetadataForm from '../components/order/OrderMetadataForm.vue'
-import { isSignSizeId } from '../config/signSizes'
+import { OFFER_LINK_MESSAGE, offerCodeSchema, type Offer } from '../domain/offer'
 import { useProjectStore } from '../stores/projectStore'
 import { loadLocalDraft, saveLocalDraft } from '../services/localDraftService'
-import { createProject } from '../services/projectService'
+import { createProject, resolveOffer } from '../services/projectService'
 
 const store = useProjectStore()
 const route = useRoute()
@@ -23,28 +22,51 @@ const saveError = ref('')
 const isSaving = ref(false)
 const remoteProjectId = ref('')
 const savedProjectUrl = ref('')
+const offer = ref<Offer | null>(null)
+const isLoadingOffer = ref(false)
+const offerError = ref('')
+const offerCode = computed(() => offerCodeSchema.safeParse(route.query.k).success ? route.query.k as string : '')
 
-onMounted(() => {
-  const draft = loadLocalDraft()
-  if (draft) store.loadProject(draft)
-  const initialSize = typeof route.query.size === 'string' ? route.query.size : ''
-  if (isSignSizeId(initialSize)) store.setSize(initialSize)
-})
+watch(() => route.query.k, async (_value, _oldValue, onCleanup) => {
+  let cancelled = false
+  onCleanup(() => { cancelled = true })
+  offer.value = null
+  offerError.value = ''
+  savedMessage.value = false
+  saveError.value = ''
+  const code = offerCode.value
+  isLoadingOffer.value = Boolean(code)
+  if (!code) {
+    offerError.value = OFFER_LINK_MESSAGE
+    return
+  }
+  try {
+    const resolved = await resolveOffer(code)
+    if (cancelled) return
+    store.startOffer(resolved, loadLocalDraft(code))
+    offer.value = resolved
+  } catch (error) {
+    if (!cancelled) offerError.value = error instanceof Error ? error.message : OFFER_LINK_MESSAGE
+  } finally {
+    if (!cancelled) isLoadingOffer.value = false
+  }
+}, { immediate: true })
 
-watch(project, (value) => { saveLocalDraft(value) }, { deep: true })
-
-function setSize(sizeId: string): void {
-  store.setSize(sizeId)
-  void router.replace({ query: { ...route.query, size: sizeId } })
-}
+watch(project, (value) => {
+  if (offer.value && !isLoadingOffer.value) saveLocalDraft(value, offerCode.value)
+}, { deep: true })
 
 async function saveProject(): Promise<void> {
+  if (!offer.value || isLoadingOffer.value || isSaving.value) return
+  const code = offerCode.value
+  store.enforceOffer()
   isSaving.value = true
   saveError.value = ''
   try {
-    const reference = await createProject(project.value)
+    const reference = await createProject(project.value, code)
+    if (code !== offerCode.value || !offer.value) return
     store.setProjectIdentity(reference.id, reference.accessToken)
-    saveLocalDraft(store.toProject())
+    saveLocalDraft(store.toProject(), code)
     remoteProjectId.value = reference.id
     savedProjectUrl.value = router.resolve({
       name: 'project',
@@ -69,21 +91,33 @@ async function saveProject(): Promise<void> {
         <p class="eyebrow">Projekt do druku 3D</p>
         <h1>Plaque Designer</h1>
       </div>
-      <div class="product-header__status"><span></span> Projekt roboczy</div>
+      <div v-if="offer" class="product-header__status"><span></span> Projekt roboczy</div>
     </header>
 
-    <div class="workspace">
+    <section v-if="isLoadingOffer" class="status-card" role="status">
+      <h2>Otwieranie kreatora</h2>
+      <p>Wczytujemy wariant tabliczki z Twojej oferty.</p>
+    </section>
+    <section v-else-if="!offer" class="status-card status-card--error" role="alert">
+      <h2>Nie można otworzyć kreatora</h2>
+      <p>{{ offerError || OFFER_LINK_MESSAGE }}</p>
+    </section>
+    <div v-else class="workspace">
       <aside class="settings-panel" aria-label="Ustawienia tabliczki">
         <div class="settings-panel__intro">
           <span class="step-badge">1</span>
           <div>
             <h2>Skonfiguruj tabliczkę</h2>
-            <p>Wybierz format i dopasuj tekst. Wszystkie wymiary podajemy w milimetrach.</p>
+            <p>Dopasuj tekst i kolor. Format oraz tło wynikają z wybranego wariantu oferty.</p>
           </div>
         </div>
 
         <div class="settings-grid">
-          <SizeSelector :model-value="store.configuration.sizeId" @update:model-value="setSize" />
+          <div class="field">
+            <span class="field__label">Format tabliczki</span>
+            <strong>{{ offer.sizeId.replace('x', ' × ') }} cm</strong>
+            <span class="field__hint">Wysokość × szerokość · wariant z oferty</span>
+          </div>
           <LineCountSelector
             :model-value="store.configuration.lineCount"
             :options="store.selectedSize.allowedLineCounts"
@@ -92,12 +126,11 @@ async function saveProject(): Promise<void> {
         </div>
 
         <div class="option-list">
-          <OptionToggle
-            :model-value="store.configuration.backgroundEnabled"
-            title="Pełne tło"
-            description="Dodaje ramkę w kolorze liter i zmniejsza obszar tekstu"
-            @update:model-value="store.setBackgroundEnabled"
-          />
+          <div class="field">
+            <span class="field__label">Pełne tło</span>
+            <strong>{{ offer.backgroundEnabled ? 'Z tłem' : 'Bez tła' }}</strong>
+            <span class="field__hint">Wariant z oferty</span>
+          </div>
           <OptionToggle
             :model-value="store.configuration.mountingHolesEnabled"
             title="Otwory montażowe"
@@ -113,8 +146,8 @@ async function saveProject(): Promise<void> {
         </div>
 
         <div class="settings-grid">
-          <ColorSelector v-model="store.configuration.printColor" label="Kolor wydruku" />
-          <ColorSelector v-if="store.configuration.backgroundEnabled" v-model="store.configuration.backgroundColor" label="Kolor tła (ramka i litery)" />
+          <ColorSelector v-model="store.configuration.printColor" label="Kolor wydruku" :premium-available="offer.premiumAvailable" />
+          <ColorSelector v-if="store.configuration.backgroundEnabled" v-model="store.configuration.backgroundColor" label="Kolor tła (ramka i litery)" :premium-available="offer.premiumAvailable" />
         </div>
 
         <div class="line-list">

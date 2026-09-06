@@ -1,4 +1,5 @@
 import { withSupabase } from 'npm:@supabase/server'
+import { isOfferCode, matchesOffer } from './offerPolicy.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -9,7 +10,7 @@ const corsHeaders = {
 function response(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
   })
 }
 
@@ -53,9 +54,32 @@ export default {
 
   try {
     const body = await request.json()
+    let offer = null
+    if (body.action === 'resolveOffer' || body.action === 'create') {
+      if (!isOfferCode(body.offerCode)) return response({ error: 'Invalid offer link' }, 403)
+      const { data, error } = await context.supabaseAdmin
+        .from('offer_links')
+        .select('size_id, background_enabled, premium_available')
+        .eq('code', body.offerCode)
+        .eq('active', true)
+        .maybeSingle()
+      if (error) return response({ error: 'Could not verify offer' }, 503)
+      if (!data) return response({ error: 'Invalid offer link' }, 403)
+      offer = data
+      if (body.action === 'resolveOffer') {
+        return response({ offer: {
+          sizeId: offer.size_id,
+          backgroundEnabled: offer.background_enabled,
+          premiumAvailable: offer.premium_available,
+        } })
+      }
+    }
     if (body.action === 'create') {
       const project = body.project
       if (!isValidProject(project)) return response({ error: 'Invalid project' }, 400)
+      if (!offer || !matchesOffer(project.configuration, offer)) {
+        return response({ error: 'Project does not match offer' }, 403)
+      }
 
       const { data, error } = await context.supabaseAdmin
         .from('projects')

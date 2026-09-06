@@ -5,11 +5,11 @@
 Aplikacja webowa do konfiguracji personalizowanych tabliczek przeznaczonych do druku 3D.
 
 MVP ma umożliwiać:
-- wybór jednego z predefiniowanych rozmiarów tabliczki,
+- rozmiar i tło ustalane przez wymagany, niejawny kod oferty w URL (`?k=...`), bez edycji przez klienta,
 - wybór liczby linii tekstu dozwolonej dla danego rozmiaru,
 - edycję każdej linii niezależnie,
 - podgląd projektu w SVG,
-- opcjonalne tło,
+- brązowy kolor premium dostępny tylko w wariantach oferty, które go dopuszczają,
 - opcjonalne otwory montażowe,
 - zebranie danych zamówienia,
 - zapis pełnej konfiguracji projektu,
@@ -48,6 +48,8 @@ MVP ma umożliwiać:
 14. Nie rozszerzaj zakresu MVP bez wyraźnego polecenia.
 
 ## Predefiniowane formaty
+
+Link oferty jest weryfikowany po stronie serwera (`offer_links`). Brak, zduplikowany lub nieprawidłowy kod blokuje kreator. Przy zapisie serwer sprawdza rozmiar, tło i dostępność premium. Nie umieszczaj prawdziwych kodów ofert w repozytorium ani w publicznej paczce frontendowej. Szkice lokalne są oddzielne dla każdego kodu. Linki zapisanych projektów z ID i tokenem nadal pozwalają na odczyt.
 
 Format zapisywany jest jako: `wysokość x szerokość`.
 

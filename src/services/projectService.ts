@@ -1,6 +1,7 @@
 import type { SignProject } from '../domain/signProject'
 import { signProjectSchema } from '../domain/validation'
 import { supabase } from '../lib/supabase'
+import { OFFER_LINK_MESSAGE, offerCodeSchema, offerSchema, type Offer } from '../domain/offer'
 
 export interface ProjectReference {
   id: string
@@ -39,10 +40,23 @@ function mapRemoteProject(record: RemoteProject): SignProject {
   return parsed.data
 }
 
-export async function createProject(project: SignProject): Promise<ProjectReference> {
+export async function resolveOffer(offerCode: string): Promise<Offer> {
+  if (!offerCodeSchema.safeParse(offerCode).success) throw new Error(OFFER_LINK_MESSAGE)
+  const { data, error } = await requireClient().functions.invoke('projects', {
+    body: { action: 'resolveOffer', offerCode },
+  })
+  if (error) {
+    if (error.context instanceof Response && error.context.status === 403) throw new Error(OFFER_LINK_MESSAGE)
+    throw new Error('Nie udało się sprawdzić linku. Sprawdź połączenie i spróbuj ponownie.')
+  }
+  return offerSchema.parse(data?.offer)
+}
+
+export async function createProject(project: SignProject, offerCode: string): Promise<ProjectReference> {
+  if (!offerCodeSchema.safeParse(offerCode).success) throw new Error(OFFER_LINK_MESSAGE)
   const client = requireClient()
   const { data, error } = await client.functions.invoke('projects', {
-    body: { action: 'create', project },
+    body: { action: 'create', project, offerCode },
   })
   if (error) throw new Error(`Nie udało się zapisać projektu: ${error.message}`)
   if (!data?.id || !data?.accessToken) throw new Error('Supabase nie zwrócił identyfikatora projektu.')
