@@ -29,8 +29,8 @@ function date(value?: string): string {
           </div>
         </div>
         <dl class="project-meta order-details__meta">
-          <div><dt>Login Allegro</dt><dd>{{ project.customer.login }}</dd></div>
-          <div><dt>Numer zamówienia Allegro</dt><dd>{{ project.customer.orderNumber }}</dd></div>
+          <div><dt>Nick zamawiającego</dt><dd>{{ project.customer.login }}</dd></div>
+          <div><dt>Numer zamówienia</dt><dd>{{ project.customer.orderNumber }}</dd></div>
           <div><dt>ID projektu</dt><dd>{{ project.id }}</dd></div>
           <div><dt>Utworzono (czas polski)</dt><dd>{{ date(project.createdAt) }}</dd></div>
           <div><dt>Ostatni zapis (czas polski)</dt><dd>{{ date(project.updatedAt) }}</dd></div>

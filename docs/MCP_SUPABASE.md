@@ -155,8 +155,8 @@ Nie używaj service-role key po stronie frontendu.
 # 6. RLS — ważne
 
 Projekt przechowuje:
-- login Allegro,
-- numer zamówienia Allegro.
+- nick zamawiającego,
+- numer zamówienia.
 
 Nie zbieraj imienia ani nazwiska. Starsza, opcjonalna kolumna `full_name` może
 pozostać w istniejącej tabeli wyłącznie dla kompatybilności wstecznej.
