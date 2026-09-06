@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 
 import { useProjectStore } from '../src/stores/projectStore'
+import { createDefaultConfiguration } from '../src/domain/signProject'
 
 describe('projectStore', () => {
   beforeEach(() => setActivePinia(createPinia()))
@@ -65,5 +66,19 @@ describe('projectStore', () => {
     expect(store.configuration.dividersEnabled).toBe(true)
     store.setDividersEnabled(false)
     expect(store.configuration.dividersEnabled).toBe(false)
+  })
+
+  it('zachowuje tożsamość zapisanego projektu przy wznowieniu szkicu', () => {
+    const store = useProjectStore()
+    const draft = {
+      id: '00000000-0000-4000-8000-000000000001',
+      accessToken: '00000000-0000-4000-8000-000000000002',
+      customer: { login: 'nick', orderNumber: '123' },
+      configuration: createDefaultConfiguration('10x15'),
+    }
+
+    store.startOffer({ sizeId: '10x15', backgroundEnabled: false, premiumAvailable: false }, draft)
+
+    expect(store.toProject()).toMatchObject({ id: draft.id, accessToken: draft.accessToken })
   })
 })

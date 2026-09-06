@@ -8,6 +8,8 @@ export interface ProjectReference {
   accessToken: string
 }
 
+export const PROJECT_ALREADY_SAVED_MESSAGE = 'Ten projekt został już zapisany i nie można zapisać go ponownie.'
+
 interface RemoteProject {
   id: string
   access_token: string
@@ -54,11 +56,15 @@ export async function resolveOffer(offerCode: string): Promise<Offer> {
 
 export async function createProject(project: SignProject, offerCode: string): Promise<ProjectReference> {
   if (!offerCodeSchema.safeParse(offerCode).success) throw new Error(OFFER_LINK_MESSAGE)
+  if (project.id || project.accessToken) throw new Error(PROJECT_ALREADY_SAVED_MESSAGE)
   const client = requireClient()
   const { data, error } = await client.functions.invoke('projects', {
     body: { action: 'create', project, offerCode },
   })
-  if (error) throw new Error(`Nie udało się zapisać projektu: ${error.message}`)
+  if (error) {
+    if (error.context instanceof Response && error.context.status === 409) throw new Error(PROJECT_ALREADY_SAVED_MESSAGE)
+    throw new Error(`Nie udało się zapisać projektu: ${error.message}`)
+  }
   if (!data?.id || !data?.accessToken) throw new Error('Supabase nie zwrócił identyfikatora projektu.')
   return { id: data.id, accessToken: data.accessToken }
 }

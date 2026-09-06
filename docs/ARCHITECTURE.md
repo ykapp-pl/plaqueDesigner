@@ -182,6 +182,8 @@ to wyłącznie nick zamawiającego oraz numer zamówienia.
 
 Bezpośredni dostęp ról `anon` i `authenticated` do tabeli jest odebrany. Zapis i odczyt odbywa się przez Edge Function `projects`, która wymaga pary `id` + `access_token` przy odczycie. Klient używa wyłącznie publicznego klucza `publishable`; operacje administracyjne pozostają po stronie Supabase Edge Function.
 
+Po udanym zapisie klient zachowuje `id` i `accessToken` w szkicu lokalnym. Taki projekt jest traktowany jako zapisany: kreator blokuje dalszą edycję i ponowny zapis, a Edge Function odrzuca próbę utworzenia projektu zawierającą już nadaną tożsamość.
+
 Pola `size_id`, `order_number`, `login` są dodatkowo wyciągnięte do kolumn, ponieważ mają być łatwe do wyszukiwania.
 
 ---

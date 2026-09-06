@@ -26,6 +26,7 @@ const offer = ref<Offer | null>(null)
 const isLoadingOffer = ref(false)
 const offerError = ref('')
 const offerCode = computed(() => offerCodeSchema.safeParse(route.query.k).success ? route.query.k as string : '')
+const hasSavedProject = computed(() => Boolean(project.value.id))
 
 watch(() => route.query.k, async (_value, _oldValue, onCleanup) => {
   let cancelled = false
@@ -57,7 +58,7 @@ watch(project, (value) => {
 }, { deep: true })
 
 async function saveProject(): Promise<void> {
-  if (!offer.value || isLoadingOffer.value || isSaving.value) return
+  if (!offer.value || isLoadingOffer.value || isSaving.value || hasSavedProject.value) return
   const code = offerCode.value
   store.enforceOffer()
   isSaving.value = true
@@ -112,58 +113,60 @@ async function saveProject(): Promise<void> {
           </div>
         </div>
 
-        <div class="settings-grid">
-          <div class="field">
-            <span class="field__label">Format tabliczki</span>
-            <strong>{{ offer.sizeId.replace('x', ' × ') }} cm</strong>
-            <span class="field__hint">Wysokość × szerokość · wariant z oferty</span>
+        <fieldset class="configurator-controls" :disabled="hasSavedProject">
+          <div class="settings-grid">
+            <div class="field">
+              <span class="field__label">Format tabliczki</span>
+              <strong>{{ offer.sizeId.replace('x', ' × ') }} cm</strong>
+              <span class="field__hint">Wysokość × szerokość · wariant z oferty</span>
+            </div>
+            <LineCountSelector
+              :model-value="store.configuration.lineCount"
+              :options="store.selectedSize.allowedLineCounts"
+              @update:model-value="store.setLineCount"
+            />
           </div>
-          <LineCountSelector
-            :model-value="store.configuration.lineCount"
-            :options="store.selectedSize.allowedLineCounts"
-            @update:model-value="store.setLineCount"
-          />
-        </div>
 
-        <div class="option-list">
-          <div class="field">
-            <span class="field__label">Pełne tło</span>
-            <strong>{{ offer.backgroundEnabled ? 'Z tłem' : 'Bez tła' }}</strong>
-            <span class="field__hint">Wariant z oferty</span>
+          <div class="option-list">
+            <div class="field">
+              <span class="field__label">Pełne tło</span>
+              <strong>{{ offer.backgroundEnabled ? 'Z tłem' : 'Bez tła' }}</strong>
+              <span class="field__hint">Wariant z oferty</span>
+            </div>
+            <OptionToggle
+              :model-value="store.configuration.mountingHolesEnabled"
+              title="Otwory montażowe"
+              description="4 otwory Ø5 mm w narożnikach"
+              @update:model-value="store.setMountingHolesEnabled"
+            />
+            <OptionToggle
+              :model-value="store.configuration.dividersEnabled"
+              title="Linie dzielące obszary"
+              description="Pasy 4 mm z marginesem 10 mm od boków"
+              @update:model-value="store.setDividersEnabled"
+            />
           </div>
-          <OptionToggle
-            :model-value="store.configuration.mountingHolesEnabled"
-            title="Otwory montażowe"
-            description="4 otwory Ø5 mm w narożnikach"
-            @update:model-value="store.setMountingHolesEnabled"
-          />
-          <OptionToggle
-            :model-value="store.configuration.dividersEnabled"
-            title="Linie dzielące obszary"
-            description="Pasy 4 mm z marginesem 10 mm od boków"
-            @update:model-value="store.setDividersEnabled"
-          />
-        </div>
 
-        <div class="settings-grid">
-          <ColorSelector v-model="store.configuration.printColor" label="Kolor wydruku" :premium-available="offer.premiumAvailable" />
-          <ColorSelector v-if="store.configuration.backgroundEnabled" v-model="store.configuration.backgroundColor" label="Kolor tła (ramka i litery)" :premium-available="offer.premiumAvailable" />
-        </div>
+          <div class="settings-grid">
+            <ColorSelector v-model="store.configuration.printColor" label="Kolor wydruku" :premium-available="offer.premiumAvailable" />
+            <ColorSelector v-if="store.configuration.backgroundEnabled" v-model="store.configuration.backgroundColor" label="Kolor tła (ramka i litery)" :premium-available="offer.premiumAvailable" />
+          </div>
 
-        <div class="line-list">
-          <LineEditor
-            v-for="(line, index) in store.configuration.lines"
-            :key="line.id"
-            :line="line"
-            :index="index"
-            @change="store.updateLine(index, $event)"
-          />
-        </div>
+          <div class="line-list">
+            <LineEditor
+              v-for="(line, index) in store.configuration.lines"
+              :key="line.id"
+              :line="line"
+              :index="index"
+              @change="store.updateLine(index, $event)"
+            />
+          </div>
+        </fieldset>
       </aside>
 
       <div class="preview-column">
         <SignPreview :configuration="store.configuration" :size="store.selectedSize" />
-        <OrderMetadataForm :customer="store.customer" :project="project" @change="store.setCustomerField" @save="saveProject" />
+        <OrderMetadataForm :customer="store.customer" :project="project" :is-saving="isSaving" @change="store.setCustomerField" @save="saveProject" />
         <p v-if="savedMessage" class="saved-message" role="status">
           Projekt zapisany w Supabase. ID: <code>{{ remoteProjectId }}</code>
           <a :href="savedProjectUrl">Otwórz zapisany projekt</a>

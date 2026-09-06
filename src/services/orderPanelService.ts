@@ -5,6 +5,7 @@ import { signProjectSchema } from '../domain/validation'
 import { supabase } from '../lib/supabase'
 
 const orderNumberSchema = z.string().trim().min(1, 'Podaj numer zamówienia.').max(80, 'Numer zamówienia jest za długi.')
+const projectIdSchema = z.string().uuid('Niepoprawny identyfikator projektu.')
 
 const remoteProjectSchema = z.object({
   id: z.string().uuid(),
@@ -137,5 +138,13 @@ export async function searchOrderProjects(orderNumber: string, offset = 0): Prom
   return {
     projects: data.projects.map(mapRemoteProject),
     hasMore: data.hasMore,
+  }
+}
+
+export async function deleteOrderProject(projectId: string): Promise<void> {
+  const id = projectIdSchema.parse(projectId)
+  const data = await invoke({ action: 'delete', projectId: id })
+  if (typeof data !== 'object' || data === null || !('deleted' in data) || data.deleted !== true) {
+    throw new Error('Nie udało się usunąć projektu. Spróbuj ponownie.')
   }
 }

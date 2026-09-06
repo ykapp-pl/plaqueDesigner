@@ -5,6 +5,7 @@ import { createDefaultConfiguration, type SignProject } from '../src/domain/sign
 
 const api = vi.hoisted(() => ({
   checkPanelAccess: vi.fn(),
+  deleteOrderProject: vi.fn(),
   onPanelSignOut: vi.fn(() => () => undefined),
   searchOrderProjects: vi.fn(),
   signInToPanel: vi.fn(),
@@ -62,7 +63,7 @@ describe('panel zamówień', () => {
     expect(wrapper.findAll('.order-panel-project-list__item')).toHaveLength(2)
     expect(wrapper.text()).toContain('KOWALSCY')
     expect(wrapper.findAll('input, select, textarea')).toHaveLength(1)
-    expect(wrapper.findAll('.order-details input, .order-details select, .order-details textarea, .order-details button')).toHaveLength(0)
+    expect(wrapper.find('.order-details__delete').exists()).toBe(true)
   })
 
   it('pobiera kolejną stronę dla pierwotnie wyszukanego numeru', async () => {
@@ -85,5 +86,33 @@ describe('panel zamówień', () => {
 
     expect(api.searchOrderProjects).toHaveBeenNthCalledWith(2, '1234567890', 1)
     expect(wrapper.text()).toContain('18')
+  })
+
+  it('wymaga potwierdzenia i usuwa wybrany projekt z wyników', async () => {
+    const firstId = '00000000-0000-0000-0000-000000000001'
+    const secondId = '00000000-0000-0000-0000-000000000002'
+    api.searchOrderProjects.mockResolvedValue({ projects: [project(firstId, 'KOWALSCY'), project(secondId, '18')], hasMore: false })
+    api.deleteOrderProject.mockResolvedValue(undefined)
+    const wrapper = open()
+    await flushPromises()
+    api.signInToPanel.mockResolvedValue(undefined)
+    await wrapper.find('input[type="email"]').setValue('owner@example.com')
+    await wrapper.find('input[type="password"]').setValue('secret')
+    await wrapper.find('.order-panel-login').trigger('submit')
+    await flushPromises()
+    await wrapper.find('.order-panel-search input').setValue('1234567890')
+    await wrapper.find('.order-panel-search').trigger('submit')
+    await flushPromises()
+    await wrapper.findAll('.order-panel-project-list__item')[1].trigger('click')
+
+    await wrapper.find('.order-details__delete').trigger('click')
+    expect(wrapper.get('[role="alertdialog"]').text()).toContain('Tej operacji nie można cofnąć.')
+    expect(api.deleteOrderProject).not.toHaveBeenCalled()
+    await wrapper.get('.order-panel-delete-confirmation .danger-button').trigger('click')
+    await flushPromises()
+
+    expect(api.deleteOrderProject).toHaveBeenCalledWith(secondId)
+    expect(wrapper.findAll('.order-panel-project-list__item')).toHaveLength(1)
+    expect(wrapper.find('.order-details__delete').exists()).toBe(true)
   })
 })
