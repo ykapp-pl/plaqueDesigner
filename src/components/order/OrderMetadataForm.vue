@@ -86,7 +86,7 @@ watch(isSaved, (saved) => {
         Uzupełnij dane zamówienia i tekst wszystkich wybranych obszarów.
       </p>
       <p class="order-form__notice">
-        Przed zapisaniem projektu dokładnie sprawdź wpisane treści i wybrane ustawienia. Kreator nie weryfikuje poprawności tekstu ani projektu — za ich treść i zgodność z zamówieniem odpowiada zamawiający. Jeśli potrzebujesz projektu przygotowanego na zamówienie lub tabliczki w niestandardowym rozmiarze, skontaktuj się z nami pod adresem <a href="mailto:ykapp.pl@gmail.com">ykapp.pl@gmail.com</a>, korzystając z danych kontaktowych podanych w ofercie.
+        Przed zapisaniem projektu dokładnie sprawdź wpisane treści i wybrane ustawienia. Wizualizacja ma charakter poglądowy i może nieznacznie różnić się od finalnego efektu. Kreator nie weryfikuje poprawności tekstu ani projektu — odpowiedzialność za ich treść i zgodność z zamówieniem ponosi zamawiający. Jeśli potrzebujesz projektu przygotowanego na zamówienie lub tabliczki w niestandardowym rozmiarze, skontaktuj się z nami pod adresem <a href="mailto:ykapp.pl@gmail.com">ykapp.pl@gmail.com</a>, korzystając z danych kontaktowych podanych w ofercie.
       </p>
       <div v-if="saveConfirmationVisible" class="save-confirmation" role="alertdialog" aria-labelledby="save-confirmation-title" aria-describedby="save-confirmation-description">
         <strong id="save-confirmation-title">Potwierdź zapis projektu</strong>

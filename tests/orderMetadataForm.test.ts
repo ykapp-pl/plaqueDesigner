@@ -17,6 +17,7 @@ describe('formularz danych zamówienia', () => {
     expect(wrapper.text()).not.toContain('Login Allegro')
     expect(wrapper.text()).toContain('Numer zamówienia')
     expect(wrapper.text()).not.toContain('Numer zamówienia Allegro')
+    expect(wrapper.text()).toContain('Wizualizacja ma charakter poglądowy i może nieznacznie różnić się od finalnego efektu.')
     expect(wrapper.text()).toContain('Kreator nie weryfikuje poprawności tekstu ani projektu')
     expect(wrapper.get('a[href="mailto:ykapp.pl@gmail.com"]').text()).toBe('ykapp.pl@gmail.com')
   })
