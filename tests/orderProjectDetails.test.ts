@@ -30,6 +30,7 @@ describe('szczegóły zapisanego projektu', () => {
     expect(wrapper.text()).toContain('KOWALSCY')
     expect(wrapper.text()).toContain('18')
     expect(wrapper.find('.sign-preview').exists()).toBe(true)
-    expect(wrapper.findAll('input, select, textarea, button')).toHaveLength(0)
+    expect(wrapper.find('.order-details__delete').exists()).toBe(true)
+    expect(wrapper.findAll('input, select, textarea')).toHaveLength(0)
   })
 })

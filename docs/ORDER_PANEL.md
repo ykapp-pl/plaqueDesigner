@@ -29,4 +29,4 @@ where email = lower(btrim('właściciel@example.com'));
 
 ## Działanie
 
-Wyszukiwanie numeru zamówienia jest dokładne po usunięciu spacji na początku i końcu. Wyniki są sortowane od najnowszego zapisu. Każdy projekt zawiera nick zamawiającego, numer zamówienia, daty zapisu, pełną konfigurację obszarów tekstowych oraz wizualizację. Panel nie zwraca tokenu, nie zapisuje zmian i nie pokazuje kontrolek edycji.
+Wyszukiwanie numeru zamówienia jest dokładne po usunięciu spacji na początku i końcu. Wyniki są sortowane od najnowszego zapisu. Każdy projekt zawiera nick zamawiającego, numer zamówienia, daty zapisu, pełną konfigurację obszarów tekstowych oraz wizualizację. Panel nie zwraca tokenu i nie pokazuje kontrolek edycji. Zalogowany właściciel może usunąć wybrany projekt po dodatkowym potwierdzeniu; usunięcie jest trwałe.

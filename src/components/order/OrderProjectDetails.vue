@@ -6,7 +6,8 @@ import { FONT_OPTIONS } from '../../config/fonts'
 import { getSignSizeById } from '../../config/signSizes'
 import type { SignProject } from '../../domain/signProject'
 
-const props = defineProps<{ project: SignProject }>()
+const props = defineProps<{ project: SignProject; deleting?: boolean }>()
+const emit = defineEmits<{ delete: [] }>()
 const size = computed(() => getSignSizeById(props.project.configuration.sizeId)!)
 const yesNo = (value: boolean) => value ? 'Tak' : 'Nie'
 const colorName = (id: string) => SIGN_COLORS.find(color => color.id === id)?.label ?? id
@@ -27,6 +28,9 @@ function date(value?: string): string {
             <p class="eyebrow">Tylko do odczytu</p>
             <h2>Zamówienie {{ project.customer.orderNumber }}</h2>
           </div>
+          <button class="danger-button order-details__delete" type="button" :disabled="deleting" @click="emit('delete')">
+            {{ deleting ? 'Usuwanie…' : 'Usuń projekt' }}
+          </button>
         </div>
         <dl class="project-meta order-details__meta">
           <div><dt>Nick zamawiającego</dt><dd>{{ project.customer.login }}</dd></div>

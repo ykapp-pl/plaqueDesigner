@@ -5,6 +5,7 @@ import OrderProjectDetails from '../components/order/OrderProjectDetails.vue'
 import type { SignProject } from '../domain/signProject'
 import {
   checkPanelAccess,
+  deleteOrderProject,
   onPanelSignOut,
   PanelAccessError,
   searchOrderProjects,
@@ -27,6 +28,9 @@ const isSearching = ref(false)
 const authError = ref('')
 const searchError = ref('')
 const orderNumberError = ref('')
+const deleteCandidate = ref<SignProject | null>(null)
+const deleteError = ref('')
+const isDeleting = ref(false)
 const hasSearched = ref(false)
 let unsubscribe = () => undefined
 let requestSerial = 0
@@ -45,6 +49,8 @@ function clearResults(): void {
   searchedOrderNumber.value = ''
   hasSearched.value = false
   searchError.value = ''
+  deleteCandidate.value = null
+  deleteError.value = ''
 }
 
 function handleSignedOut(): void {
@@ -131,6 +137,39 @@ async function search(nextOffset = 0, requestedOrderNumber = orderNumber.value.t
     }
   } finally {
     if (serial === requestSerial) isSearching.value = false
+  }
+}
+
+function requestDelete(project: SignProject): void {
+  if (!project.id || isDeleting.value) return
+  deleteError.value = ''
+  deleteCandidate.value = project
+}
+
+function cancelDelete(): void {
+  if (!isDeleting.value) deleteCandidate.value = null
+}
+
+async function confirmDelete(): Promise<void> {
+  const project = deleteCandidate.value
+  if (!project?.id || isDeleting.value) return
+
+  isDeleting.value = true
+  deleteError.value = ''
+  try {
+    await deleteOrderProject(project.id)
+    projects.value = projects.value.filter((item) => item.id !== project.id)
+    selectedProjectId.value = projects.value[0]?.id ?? ''
+    deleteCandidate.value = null
+  } catch (error) {
+    if (error instanceof PanelAccessError) {
+      handleSignedOut()
+      authError.value = error.message
+    } else {
+      deleteError.value = error instanceof Error ? error.message : 'Nie udało się usunąć projektu.'
+    }
+  } finally {
+    isDeleting.value = false
   }
 }
 
@@ -254,7 +293,23 @@ onUnmounted(() => {
               <span aria-hidden="true">→</span>
             </button>
           </nav>
-          <OrderProjectDetails v-if="selectedProject" :project="selectedProject" />
+          <OrderProjectDetails
+            v-if="selectedProject"
+            :project="selectedProject"
+            :deleting="Boolean(deleteCandidate)"
+            @delete="requestDelete(selectedProject)"
+          />
+          <div v-if="deleteCandidate" class="order-panel-delete-confirmation" role="alertdialog" aria-labelledby="delete-project-title" aria-describedby="delete-project-description">
+            <strong id="delete-project-title">Usunąć zapisany projekt?</strong>
+            <p id="delete-project-description">Projekt {{ deleteCandidate.customer.orderNumber }} oraz jego wizualizacja zostaną trwale usunięte. Tej operacji nie można cofnąć.</p>
+            <div class="order-panel-delete-confirmation__actions">
+              <button class="secondary-button" type="button" :disabled="isDeleting" @click="cancelDelete">Anuluj</button>
+              <button class="danger-button" type="button" :disabled="isDeleting" @click="confirmDelete">
+                {{ isDeleting ? 'Usuwanie…' : 'Usuń trwale' }}
+              </button>
+            </div>
+          </div>
+          <p v-if="deleteError" class="form-error" role="alert">{{ deleteError }}</p>
         </div>
       </section>
     </template>
