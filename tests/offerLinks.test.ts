@@ -15,6 +15,8 @@ const standardCode = 'a'.repeat(32)
 const premiumCode = 'b'.repeat(32)
 const standard = { sizeId: '10x15', backgroundEnabled: false, premiumAvailable: false }
 const premium = { sizeId: '20x25', backgroundEnabled: true, premiumAvailable: true }
+const savedProjectId = '00000000-0000-4000-8000-000000000001'
+const savedAccessToken = '00000000-0000-4000-8000-000000000002'
 
 async function open(url: string) {
   const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/', component: ConfiguratorView }] })
@@ -80,7 +82,7 @@ describe('wymagany link oferty', () => {
   })
 
   it('przekazuje kod przy zapisie i ukrywa formularz po usunięciu kodu bez przeładowania', async () => {
-    api.createProject.mockResolvedValue({ id: 'test', accessToken: 'test' })
+    api.createProject.mockResolvedValue({ id: savedProjectId, accessToken: savedAccessToken })
     const { wrapper, router, store } = await open(`/?k=${standardCode}`)
     // The save API must receive the offer code, never only the editable project.
     store.setCustomerField('login', 'test')
@@ -90,11 +92,33 @@ describe('wymagany link oferty', () => {
     wrapper.findComponent({ name: 'OrderMetadataForm' }).vm.$emit('save')
     await flushPromises()
     expect(api.createProject).toHaveBeenCalledWith(expect.objectContaining({ configuration: expect.objectContaining({ sizeId: '10x15' }) }), standardCode)
+    expect(wrapper.find('button[type="submit"]').exists()).toBe(false)
+    expect(wrapper.text()).toContain('Ponowne zapisanie projektu nie jest możliwe.')
     await router.push('/')
     await flushPromises()
     expect(wrapper.find('form').exists()).toBe(false)
     expect(wrapper.text()).toContain(OFFER_LINK_MESSAGE)
     wrapper.unmount()
+  })
+
+  it('zachowuje status zapisanego projektu po ponownym otwarciu kreatora', async () => {
+    api.createProject.mockResolvedValue({ id: savedProjectId, accessToken: savedAccessToken })
+    const { wrapper, store } = await open(`/?k=${standardCode}`)
+    store.setCustomerField('login', 'nick')
+    store.setCustomerField('orderNumber', '123')
+    store.updateLine(0, { text: 'TEST' })
+    await flushPromises()
+
+    wrapper.findComponent({ name: 'OrderMetadataForm' }).vm.$emit('save')
+    await flushPromises()
+    wrapper.unmount()
+
+    const reopened = await open(`/?k=${standardCode}`)
+    expect(reopened.store.toProject()).toMatchObject({ id: savedProjectId, accessToken: savedAccessToken })
+    expect(reopened.wrapper.find('button[type="submit"]').exists()).toBe(false)
+    expect(reopened.wrapper.text()).toContain('Ten projekt został już zapisany.')
+    expect(api.createProject).toHaveBeenCalledTimes(1)
+    reopened.wrapper.unmount()
   })
 
   it('ignoruje spóźnioną odpowiedź poprzedniej oferty', async () => {

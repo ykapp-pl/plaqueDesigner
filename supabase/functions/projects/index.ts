@@ -76,6 +76,7 @@ export default {
     }
     if (body.action === 'create') {
       const project = body.project
+      if (project?.id || project?.accessToken) return response({ error: 'Project already saved' }, 409)
       if (!isValidProject(project)) return response({ error: 'Invalid project' }, 400)
       if (!offer || !matchesOffer(project.configuration, offer)) {
         return response({ error: 'Project does not match offer' }, 403)

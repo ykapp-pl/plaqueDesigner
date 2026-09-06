@@ -80,6 +80,13 @@ button, select, input[type='checkbox'] { cursor: pointer; }
 .order-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .order-form__notice { margin: 0; padding: 12px 14px; border-left: 3px solid #e39a21; border-radius: 8px; color: #656f7c; background: #fffaf1; font-size: .76rem; line-height: 1.55; }
 .order-form__notice a { color: #80540e; font-weight: 750; }
+.order-form__saved { margin: 0; padding: 12px 14px; border: 1px solid #c9e4d4; border-radius: 8px; color: #28683f; background: #edf9f1; font-size: .78rem; line-height: 1.5; }
+.save-confirmation { display: grid; gap: 9px; margin: 0; padding: 14px; border: 1px solid #e6c17c; border-radius: 10px; color: #5d471c; background: #fff8e8; font-size: .8rem; line-height: 1.5; }
+.save-confirmation strong { color: #3e3017; }
+.save-confirmation p { margin: 0; }
+.save-confirmation__actions { display: flex; justify-content: flex-end; gap: 8px; }
+.configurator-controls { min-width: 0; margin: 0; padding: 0; border: 0; }
+.configurator-controls[disabled] { opacity: .7; }
 .field__error { color: #b34d40; font-size: .74rem; }
 .form-error { margin: 0; padding: 10px 12px; border-radius: 9px; color: #9e3f34; background: #fff0ed; font-size: .78rem; }
 .primary-button { min-height: 44px; border: 0; border-radius: 10px; color: #fff; background: #15191f; font-weight: 750; }

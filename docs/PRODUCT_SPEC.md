@@ -295,6 +295,8 @@ export interface SignProject {
 
 Zapisuj także `schemaVersion`, aby można było migrować stare projekty po rozwoju konfiguratora.
 
+Po pierwszym udanym zapisie projekt otrzymuje `id` i `accessToken`. Kreator zapisuje tę informację w lokalnym szkicu, blokuje dalszą edycję oraz ponowny zapis tego projektu. Przed pierwszym zapisem klient otrzymuje komunikat wymagający potwierdzenia, że dane zostały sprawdzone. Serwer dodatkowo odrzuca próbę ponownego utworzenia projektu zawierającą istniejącą tożsamość zapisu.
+
 ---
 
 ## 10. URL

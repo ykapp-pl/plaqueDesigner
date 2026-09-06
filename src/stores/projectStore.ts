@@ -131,8 +131,8 @@ export const useProjectStore = defineStore('project', () => {
 
   function startOffer(nextOffer: Offer, draft: SignProject | null): void {
     offer.value = nextOffer
-    projectId.value = undefined
-    accessToken.value = undefined
+    projectId.value = draft?.id
+    accessToken.value = draft?.accessToken
     customer.value = draft ? { ...draft.customer } : { login: '', orderNumber: '' }
     configuration.value = draft ? structuredClone(draft.configuration) : createDefaultConfiguration(nextOffer.sizeId)
     enforceOffer()
