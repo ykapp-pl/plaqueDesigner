@@ -6,9 +6,9 @@ Na pierwszy etap uruchom trzy oferty „Kup teraz”, po jednej dla każdego, do
 
 | Oferta | Format | Cena startowa brutto, bez dostawy | Rola w teście |
 |---|---:|---:|---|
-| Duża tabliczka adresowa | 25 × 25 cm | 54,99 zł | Reprezentacyjny format na elewację i ogrodzenie. |
-| Pionowa tabliczka adresowa | 15 × 25 cm | 44,99 zł | Ulica i numer w formacie na wąskie miejsce. |
-| Mały numer domu | 15 × 15 cm | 34,99 zł | Najniższy próg wejścia dla prostego oznaczenia domu. |
+| Duża tabliczka adresowa | 25 × 25 cm | 79,99 zł | Reprezentacyjny format na elewację i ogrodzenie. |
+| Pionowa tabliczka adresowa | 15 × 25 cm | 64,99 zł | Ulica i numer w formacie na wąskie miejsce. |
+| Mały numer domu | 15 × 15 cm | 49,99 zł | Kompaktowy format dla prostego oznaczenia domu. |
 
 Nie wystawiaj w jednej ofercie kilku rozmiarów jako swobodnego wyboru po zakupie. Allegro traktuje to jako niedozwolony wybór towaru z listy. Każda z trzech ofert ma osobny link do designera, który zezwala tylko na format wykupiony przez klienta.
 
@@ -20,6 +20,8 @@ Nie wystawiaj w jednej ofercie kilku rozmiarów jako swobodnego wyboru po zakupi
 - **Tło:** domyślnie włączone, z możliwością wyłączenia w konfiguratorze.
 - **Parametry do uzupełnienia zgodnie ze stanem faktycznym:** materiał, grubość, sposób montażu, zawartość paczki, czas realizacji, warunki reklamacji/zwrotów oraz dane GPSR.
 - **Nie deklaruj bez potwierdzenia:** odporności UV, wodoodporności, materiału, elementów montażowych ani terminu wykonania.
+
+Przy koszcie wydruku około 10 zł z tłem ceny startowe zostawiają odpowiednio około 69,99 zł, 54,99 zł i 39,99 zł przed prowizją Allegro, pakowaniem, robocizną, podatkami i dostawą. Tło wyłączone nie wymaga osobnej, niższej ceny — w tych trzech ofertach jest bezpłatną opcją wizualną.
 
 ## Promocja: niski budżet
 
@@ -34,7 +36,7 @@ Przygotuj 3–5 rzeczywistych zdjęć do każdej oferty: front na białym tle ja
 
 ## Link do designera
 
-Nie wklejaj URL konfiguratora do opisu Allegro. W opisie Allegro wolno używać tylko prostego HTML, a link ma zostać przesłany kupującemu po zakupie przez wiadomość Allegro. Dedykowane adresy są w pliku `linki-konfiguratora-po-zakupie.md`.
+Możesz podać dedykowany URL designera w opisie każdej oferty jako zwykły tekst w akapicie HTML — bez tagu `<a>`. Allegro dopuszcza link zewnętrzny wyłącznie wtedy, gdy rozszerza informacje o sprzedawanym produkcie i nie umożliwia zakupu poza Allegro. Konfigurator musi więc pozostać wyłącznie narzędziem do podglądu i projektu: bez koszyka, płatności, cen oraz odnośników do sprzedaży poza Allegro. Każdy opis wykorzystuje adres ograniczony do jednego formatu.
 
 ## Źródła
 
@@ -43,4 +45,5 @@ Nie wklejaj URL konfiguratora do opisu Allegro. W opisie Allegro wolno używać 
 - [Wyróżnienia i ich koszty — Allegro](https://help.allegro.com/pl/sell/a/czym-sa-wyroznienia-czyli-opcje-promowania-nnkeyKZLlUY)
 - [Budżet i statystyki Allegro Ads](https://help.allegro.com/pl/sell/c/budzet-i-statystyki-reklam-allegro-ads)
 - [Wymagania prostego HTML w opisach](https://help.allegro.com/pl/sell/a/mam-problem-z-wystawianiem-ofert-z-pliku-co-robic-4RxWk8ZmaFw)
+- [Zasady linków w opisach Allegro](https://help.allegro.com/pl/sell/c/zasady-dla-tytulu-i-opisu?page=1)
 - [Przykład właściwej kategorii](https://allegro.pl/oferta/tabliczka-adresowa-tablica-numer-numery-dom-3d-5045527021)
