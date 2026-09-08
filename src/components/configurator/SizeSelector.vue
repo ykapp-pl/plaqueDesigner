@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { SIGN_SIZES } from '../../config/signSizes'
+import { computed } from 'vue'
+import { getSignSizeById } from '../../config/signSizes'
 
-defineProps<{ modelValue: string }>()
+const props = defineProps<{ modelValue: string; sizeIds: readonly string[] }>()
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
+const sizes = computed(() => props.sizeIds.map(getSignSizeById).filter((size) => size !== undefined))
 </script>
 
 <template>
@@ -13,7 +15,7 @@ const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
       class="control"
       @change="emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
     >
-      <option v-for="size in SIGN_SIZES" :key="size.id" :value="size.id">
+      <option v-for="size in sizes" :key="size.id" :value="size.id">
         {{ size.id.replace('x', ' × ') }} cm
       </option>
     </select>

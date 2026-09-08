@@ -108,6 +108,39 @@ export type Database = {
           },
         ]
       }
+      offer_links: {
+        Row: {
+          active: boolean
+          allowed_size_ids: string[]
+          background_editable: boolean
+          background_enabled: boolean
+          code: string
+          created_at: string
+          premium_available: boolean
+          size_id: string
+        }
+        Insert: {
+          active?: boolean
+          allowed_size_ids: string[]
+          background_editable?: boolean
+          background_enabled: boolean
+          code?: string
+          created_at?: string
+          premium_available: boolean
+          size_id: string
+        }
+        Update: {
+          active?: boolean
+          allowed_size_ids?: string[]
+          background_editable?: boolean
+          background_enabled?: boolean
+          code?: string
+          created_at?: string
+          premium_available?: boolean
+          size_id?: string
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           access_token: string

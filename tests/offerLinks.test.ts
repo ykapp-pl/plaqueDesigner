@@ -13,8 +13,8 @@ const api = vi.hoisted(() => ({ resolveOffer: vi.fn(), createProject: vi.fn() })
 vi.mock('../src/services/projectService', () => api)
 const standardCode = 'a'.repeat(32)
 const premiumCode = 'b'.repeat(32)
-const standard = { sizeId: '10x15', backgroundEnabled: false, premiumAvailable: false }
-const premium = { sizeId: '20x25', backgroundEnabled: true, premiumAvailable: true }
+const standard = { defaultSizeId: '10x15', allowedSizeIds: ['10x15'], backgroundDefaultEnabled: false, backgroundEditable: false, premiumAvailable: false }
+const premium = { defaultSizeId: '20x25', allowedSizeIds: ['20x25', '25x20'], backgroundDefaultEnabled: true, backgroundEditable: true, premiumAvailable: true }
 const savedProjectId = '00000000-0000-4000-8000-000000000001'
 const savedAccessToken = '00000000-0000-4000-8000-000000000002'
 
@@ -51,7 +51,7 @@ describe('wymagany link oferty', () => {
     wrapper.unmount()
   })
 
-  it('ustala format i tło, ignoruje jawne parametry, usuwa premium ze szkicu', async () => {
+  it('stosuje ograniczenia oferty, ignoruje jawne parametry i usuwa niedostępne premium ze szkicu', async () => {
     const configuration = createDefaultConfiguration('25x25', 3)
     configuration.backgroundEnabled = true
     configuration.printColor = configuration.backgroundColor = 'wood'
@@ -64,6 +64,20 @@ describe('wymagany link oferty', () => {
     store.setBackgroundEnabled(true)
     expect(store.configuration.sizeId).toBe('10x15')
     expect(store.configuration.backgroundEnabled).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('pozwala wybrać wyłącznie formaty oraz tło przypisane do wariantu grupowego', async () => {
+    const { wrapper, store } = await open(`/?k=${premiumCode}`)
+
+    expect(wrapper.find('option[value="20x25"]').exists()).toBe(true)
+    expect(wrapper.find('option[value="25x20"]').exists()).toBe(true)
+    expect(wrapper.find('option[value="25x25"]').exists()).toBe(false)
+    expect(store.configuration.backgroundEnabled).toBe(true)
+
+    store.setSize('25x20')
+    store.setBackgroundEnabled(false)
+    expect(store.configuration).toMatchObject({ sizeId: '25x20', widthMm: 200, heightMm: 250, backgroundEnabled: false })
     wrapper.unmount()
   })
 
@@ -137,7 +151,7 @@ describe('wymagany link oferty', () => {
 })
 
 describe('walidacja serwerowa wariantu', () => {
-  const policy = { size_id: '10x15', background_enabled: false, premium_available: false }
+  const policy = { size_id: '10x15', allowed_size_ids: ['10x15'], background_enabled: false, background_editable: false, premium_available: false }
   it('odrzuca brak kodu, dowolny tekst i tablice parametrów', () => {
     for (const code of [undefined, '', 'size=10x15', [standardCode], 'g'.repeat(32)]) expect(isOfferCode(code)).toBe(false)
     expect(isOfferCode(standardCode)).toBe(true)
@@ -149,5 +163,7 @@ describe('walidacja serwerowa wariantu', () => {
       expect(matchesOffer({ ...configuration, ...patch }, policy)).toBe(false)
     }
     expect(matchesOffer({ ...configuration, printColor: 'wood' }, { ...policy, premium_available: true })).toBe(true)
+    expect(matchesOffer({ ...configuration, sizeId: '15x10' }, { ...policy, allowed_size_ids: ['10x15', '15x10'] })).toBe(true)
+    expect(matchesOffer({ ...configuration, backgroundEnabled: true }, { ...policy, background_editable: true })).toBe(true)
   })
 })

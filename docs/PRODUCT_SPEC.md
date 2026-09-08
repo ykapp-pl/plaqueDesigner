@@ -46,9 +46,23 @@ export const SIGN_SIZES: readonly SignSizeDefinition[] = [
     backgroundWorkAreaInsetMm: 10,
   },
   {
+    id: '25x20',
+    heightMm: 250,
+    widthMm: 200,
+    allowedLineCounts: [1, 2, 3],
+    backgroundWorkAreaInsetMm: 10,
+  },
+  {
     id: '15x25',
     heightMm: 150,
     widthMm: 250,
+    allowedLineCounts: [1, 2],
+    backgroundWorkAreaInsetMm: 10,
+  },
+  {
+    id: '25x15',
+    heightMm: 250,
+    widthMm: 150,
     allowedLineCounts: [1, 2],
     backgroundWorkAreaInsetMm: 10,
   },
@@ -70,6 +84,13 @@ export const SIGN_SIZES: readonly SignSizeDefinition[] = [
     id: '10x15',
     heightMm: 100,
     widthMm: 150,
+    allowedLineCounts: [1, 2],
+    backgroundWorkAreaInsetMm: 5,
+  },
+  {
+    id: '15x10',
+    heightMm: 150,
+    widthMm: 100,
     allowedLineCounts: [1, 2],
     backgroundWorkAreaInsetMm: 5,
   },
@@ -306,13 +327,13 @@ Kreator wymaga linku oferty z losowym kodem:
 /configurator?k=<32 losowe znaki szesnastkowe>
 ```
 
-Kod wskazuje rekord `offer_links`, odczytywany wyłącznie przez serwer. Ustala rozmiar ze `SIGN_SIZES`, obecność tła oraz dostępność brązowego koloru premium w obu selektorach kolorów. Rozmiar i tło są prezentowane informacyjnie, bez możliwości edycji. Czarne i białe kolory są zawsze dostępne.
+Kod wskazuje rekord `offer_links`, odczytywany wyłącznie przez serwer. Ustala grupę formatów ze `SIGN_SIZES`, format domyślny, domyślne tło, możliwość jego wyłączenia oraz dostępność brązowego koloru premium w obu selektorach kolorów. Czarne i białe kolory są zawsze dostępne.
 
 Brak, powtórzony parametr `k`, nieprawidłowy lub wyłączony kod blokuje kreator komunikatem: „Aby otworzyć kreator, skorzystaj z linku w ofercie lub wiadomości e-mail dotyczącej zamówienia.” Awaria weryfikacji również blokuje formularz, ale wyświetla komunikat o problemie z połączeniem.
 
 Jawne parametry `size`, `background` i `premium` nie sterują kreatorem. Serwer weryfikuje kod oraz zgodność konfiguracji również przy zapisie. Szkice przeglądarki są rozdzielone według kodu i nie mogą nadpisać ograniczeń oferty. Zapisany projekt nadal otwiera się przez `/project/:id?token=...`.
 
-Link jest wielokrotnego użytku i można go przekazać dalej. Nie potwierdza zakupu; wskazuje wariant oferty. Zestaw 24 linków (6 formatów × tło tak/nie × premium tak/nie) jest generowany w bazie, poza publicznym repozytorium.
+Link jest wielokrotnego użytku i można go przekazać dalej. Nie potwierdza zakupu; wskazuje wariant oferty. Zestaw 9 linków (trzy grupy formatów × wariant: bez tła / tło opcjonalne / tło opcjonalne z premium) jest generowany w bazie, poza publicznym repozytorium. Grupy to: `25x25`, `20x25`, `25x20`; `15x25`, `25x15`, `10x25`; oraz `15x15`, `10x15`, `15x10`.
 
 ---
 
@@ -320,7 +341,7 @@ Link jest wielokrotnego użytku i można go przekazać dalej. Nie potwierdza zak
 
 MVP jest gotowe, gdy:
 
-- wszystkie 6 formatów działa,
+- wszystkie 9 formatów działa,
 - każdy format oferuje prawidłowe liczby linii,
 - każda linia ma niezależny tekst/font/rozmiar/alignment X/Y,
 - SVG odwzorowuje fizyczne proporcje,
