@@ -23,7 +23,7 @@ export const useProjectStore = defineStore('project', () => {
   const selectedSize = computed(() => getSignSizeById(configuration.value.sizeId) ?? SIGN_SIZES[0])
 
   function setSize(sizeId: string): void {
-    if (offer.value && sizeId !== offer.value.sizeId) return
+    if (offer.value && !offer.value.allowedSizeIds.includes(sizeId)) return
     const nextSize = getSignSizeById(sizeId)
     if (!nextSize) return
 
@@ -85,7 +85,7 @@ export const useProjectStore = defineStore('project', () => {
   }
 
   function setBackgroundEnabled(enabled: boolean): void {
-    if (offer.value && enabled !== offer.value.backgroundEnabled) return
+    if (offer.value && !offer.value.backgroundEditable && enabled !== offer.value.backgroundDefaultEnabled) return
     const previousHeight = getWorkArea(selectedSize.value, configuration.value.backgroundEnabled).height
     configuration.value.backgroundEnabled = enabled
     const nextHeight = getWorkArea(selectedSize.value, enabled).height
@@ -121,8 +121,16 @@ export const useProjectStore = defineStore('project', () => {
 
   function enforceOffer(): void {
     if (!offer.value) return
-    if (configuration.value.sizeId !== offer.value.sizeId) setSize(offer.value.sizeId)
-    setBackgroundEnabled(offer.value.backgroundEnabled)
+    if (!offer.value.allowedSizeIds.includes(configuration.value.sizeId)) setSize(offer.value.defaultSizeId)
+    if (!offer.value.backgroundEditable && configuration.value.backgroundEnabled !== offer.value.backgroundDefaultEnabled) {
+      const previousHeight = getWorkArea(selectedSize.value, configuration.value.backgroundEnabled).height
+      configuration.value.backgroundEnabled = offer.value.backgroundDefaultEnabled
+      const nextHeight = getWorkArea(selectedSize.value, configuration.value.backgroundEnabled).height
+      if (previousHeight !== nextHeight && configuration.value.lines.every((line) => line.areaHeightMm > 0)) {
+        const scale = nextHeight / previousHeight
+        configuration.value.lines.forEach((line) => { line.areaHeightMm *= scale })
+      }
+    }
     if (!offer.value.premiumAvailable) {
       if (configuration.value.printColor === 'wood') configuration.value.printColor = 'white'
       if (configuration.value.backgroundColor === 'wood') configuration.value.backgroundColor = 'black'
@@ -134,7 +142,8 @@ export const useProjectStore = defineStore('project', () => {
     projectId.value = draft?.id
     accessToken.value = draft?.accessToken
     customer.value = draft ? { ...draft.customer } : { login: '', orderNumber: '' }
-    configuration.value = draft ? structuredClone(draft.configuration) : createDefaultConfiguration(nextOffer.sizeId)
+    configuration.value = draft ? structuredClone(draft.configuration) : createDefaultConfiguration(nextOffer.defaultSizeId)
+    if (!draft) setBackgroundEnabled(nextOffer.backgroundDefaultEnabled)
     enforceOffer()
   }
 

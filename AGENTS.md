@@ -57,10 +57,13 @@ Format zapisywany jest jako: `wysokość x szerokość`.
 |---|---:|---:|---|
 | 25x25 | 250 mm | 250 mm | 1, 2, 3 |
 | 20x25 | 200 mm | 250 mm | 1, 2, 3 |
+| 25x20 | 250 mm | 200 mm | 1, 2, 3 |
 | 15x25 | 150 mm | 250 mm | 1, 2 |
+| 25x15 | 250 mm | 150 mm | 1, 2 |
 | 10x25 | 100 mm | 250 mm | 1, 2 |
 | 15x15 | 150 mm | 150 mm | 1, 2 |
 | 10x15 | 100 mm | 150 mm | 1, 2 |
+| 15x10 | 150 mm | 100 mm | 1, 2 |
 
 ## Tło i obszar roboczy
 
@@ -68,8 +71,8 @@ Jeżeli `backgroundEnabled = false`:
 - obszar roboczy tekstu jest równy pełnemu formatowi tabliczki, z wyjątkiem bezpiecznych stref wynikających z otworów montażowych.
 
 Jeżeli `backgroundEnabled = true`:
-- dla formatów `25x25`, `20x25`, `15x25`: inset obszaru roboczego wynosi 10 mm z KAŻDEJ strony,
-- dla formatów `10x25`, `15x15`, `10x15`: inset obszaru roboczego wynosi 5 mm z KAŻDEJ strony.
+- dla formatów `25x25`, `20x25`, `25x20`, `15x25`, `25x15`: inset obszaru roboczego wynosi 10 mm z KAŻDEJ strony,
+- dla formatów `10x25`, `15x15`, `10x15`, `15x10`: inset obszaru roboczego wynosi 5 mm z KAŻDEJ strony.
 
 Przykłady:
 - 250 x 250 mm z tłem -> obszar roboczy 230 x 230 mm,

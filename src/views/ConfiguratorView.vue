@@ -6,6 +6,7 @@ import ColorSelector from '../components/configurator/ColorSelector.vue'
 import LineCountSelector from '../components/configurator/LineCountSelector.vue'
 import LineEditor from '../components/configurator/LineEditor.vue'
 import OptionToggle from '../components/configurator/OptionToggle.vue'
+import SizeSelector from '../components/configurator/SizeSelector.vue'
 import SignPreview from '../components/preview/SignPreview.vue'
 import OrderMetadataForm from '../components/order/OrderMetadataForm.vue'
 import { OFFER_LINK_MESSAGE, offerCodeSchema, type Offer } from '../domain/offer'
@@ -109,17 +110,17 @@ async function saveProject(): Promise<void> {
           <span class="step-badge">1</span>
           <div>
             <h2>Skonfiguruj tabliczkę</h2>
-            <p>Dopasuj tekst i kolor. Format oraz tło wynikają z wybranego wariantu oferty.</p>
+            <p>Dopasuj format, tekst i kolor w zakresie wskazanym przez wariant oferty.</p>
           </div>
         </div>
 
         <fieldset class="configurator-controls" :disabled="hasSavedProject">
           <div class="settings-grid">
-            <div class="field">
-              <span class="field__label">Format tabliczki</span>
-              <strong>{{ offer.sizeId.replace('x', ' × ') }} cm</strong>
-              <span class="field__hint">Wysokość × szerokość · wariant z oferty</span>
-            </div>
+            <SizeSelector
+              :model-value="store.configuration.sizeId"
+              :size-ids="offer.allowedSizeIds"
+              @update:model-value="store.setSize"
+            />
             <LineCountSelector
               :model-value="store.configuration.lineCount"
               :options="store.selectedSize.allowedLineCounts"
@@ -128,9 +129,16 @@ async function saveProject(): Promise<void> {
           </div>
 
           <div class="option-list">
-            <div class="field">
+            <OptionToggle
+              v-if="offer.backgroundEditable"
+              :model-value="store.configuration.backgroundEnabled"
+              title="Pełne tło"
+              description="Domyślnie włączone w tym wariancie"
+              @update:model-value="store.setBackgroundEnabled"
+            />
+            <div v-else class="field">
               <span class="field__label">Pełne tło</span>
-              <strong>{{ offer.backgroundEnabled ? 'Z tłem' : 'Bez tła' }}</strong>
+              <strong>{{ offer.backgroundDefaultEnabled ? 'Z tłem' : 'Bez tła' }}</strong>
               <span class="field__hint">Wariant z oferty</span>
             </div>
             <OptionToggle

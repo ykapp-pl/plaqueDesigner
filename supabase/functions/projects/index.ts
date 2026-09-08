@@ -24,10 +24,13 @@ function isValidProject(project: any): boolean {
   const sizes: Record<string, { width: number; height: number; lines: number[] }> = {
     '25x25': { width: 250, height: 250, lines: [1, 2, 3] },
     '20x25': { width: 250, height: 200, lines: [1, 2, 3] },
+    '25x20': { width: 200, height: 250, lines: [1, 2, 3] },
     '15x25': { width: 250, height: 150, lines: [1, 2] },
+    '25x15': { width: 150, height: 250, lines: [1, 2] },
     '10x25': { width: 250, height: 100, lines: [1, 2] },
     '15x15': { width: 150, height: 150, lines: [1, 2] },
     '10x15': { width: 150, height: 100, lines: [1, 2] },
+    '15x10': { width: 100, height: 150, lines: [1, 2] },
   }
   const size = sizes[configuration?.sizeId]
   if (!customer || !configuration || !size) return false
@@ -59,7 +62,7 @@ export default {
       if (!isOfferCode(body.offerCode)) return response({ error: 'Invalid offer link' }, 403)
       const { data, error } = await context.supabaseAdmin
         .from('offer_links')
-        .select('size_id, background_enabled, premium_available')
+        .select('size_id, allowed_size_ids, background_enabled, background_editable, premium_available')
         .eq('code', body.offerCode)
         .eq('active', true)
         .maybeSingle()
@@ -68,8 +71,10 @@ export default {
       offer = data
       if (body.action === 'resolveOffer') {
         return response({ offer: {
-          sizeId: offer.size_id,
-          backgroundEnabled: offer.background_enabled,
+          defaultSizeId: offer.size_id,
+          allowedSizeIds: offer.allowed_size_ids,
+          backgroundDefaultEnabled: offer.background_enabled,
+          backgroundEditable: offer.background_editable,
           premiumAvailable: offer.premium_available,
         } })
       }

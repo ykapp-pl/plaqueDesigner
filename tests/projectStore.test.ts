@@ -77,7 +77,7 @@ describe('projectStore', () => {
       configuration: createDefaultConfiguration('10x15'),
     }
 
-    store.startOffer({ sizeId: '10x15', backgroundEnabled: false, premiumAvailable: false }, draft)
+    store.startOffer({ defaultSizeId: '10x15', allowedSizeIds: ['10x15'], backgroundDefaultEnabled: false, backgroundEditable: false, premiumAvailable: false }, draft)
 
     expect(store.toProject()).toMatchObject({ id: draft.id, accessToken: draft.accessToken })
   })
