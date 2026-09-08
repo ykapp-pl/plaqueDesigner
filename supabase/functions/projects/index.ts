@@ -71,6 +71,9 @@ export default {
       offer = data
       if (body.action === 'resolveOffer') {
         return response({ offer: {
+          // Kept during the frontend rollout so the previous client can still open the default variant.
+          sizeId: offer.size_id,
+          backgroundEnabled: offer.background_enabled,
           defaultSizeId: offer.size_id,
           allowedSizeIds: offer.allowed_size_ids,
           backgroundDefaultEnabled: offer.background_enabled,
